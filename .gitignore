@@ -2,6 +2,9 @@
 Debug/
 Release/
 
+# Titan install files
+data/
+titan/
 
 
 
