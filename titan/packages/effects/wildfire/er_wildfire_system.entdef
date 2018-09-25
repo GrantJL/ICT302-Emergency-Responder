@@ -1,0 +1,27 @@
+{
+	"descriptors" :
+	[
+		{
+			"Name"			: "ER Wildfire System",
+			"entityKeyName"	: "er_wildfire_system",
+			"Path"			: "effects/graphEffects/fire",
+			"ClassName"		: "core::tStaticObject",
+			"Filter"		: "Effect",
+			"Blueprint"		: "scenery, building, urban, null, null",
+
+			"unitData" :
+			{
+				"unitSymbol" : "WAR.AIRTRK.MIL.LTA",
+				"defaultAllianceName" : "NEUTRAL",
+				"countryOrigin" : "",
+				"corps" : "",
+				"type" : "",
+				"subtype" : ""
+            },
+
+            "eventSystemScripts" : [
+				"packages/effects/wildfire/er_wildfire_system.js"
+			]
+		}
+	]
+}

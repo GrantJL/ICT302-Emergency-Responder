@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--
+			Controls:
+			Pitch : Ctrl +		Ctrl -
+			Roll:	Shift +		Shift -
+			Yaw:	Alt +		Alt -
+		-->
+		<!-- CORE TITAN RESOURCES -->
+		<!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="../../../gui/css/titan-widgets.css"/>
+		<!-- Javascript -->
+		<script type="text/javascript" src="../../../gui/js/jquery.js"></script>
+		<script type="text/javascript" src="../../../gui/js/ot/pha.js"></script>
+		<script type="text/javascript" src="../../../gui/js/titanEventHandlers.js"></script>
+		<script type="text/javascript" src="../../../gui/js/titanWidgets.js"></script>
+
+		<!-- Plugin Resources -->
+		<link rel="stylesheet" type="text/css" href="css/EmergencyResponder.css"/>
+		<script type="text/javascript" src="js/EmergencyResponder.js"></script>
+	</head>
+
+	<body>
+		<div class="content-wrapper">
+			<div class="constructor-container">
+
+				<!-- HEADER BAR -->
+				<header class="dragdrop">
+					<div class="closeIcon"></div>
+					<h3 class="dragdrop" title="Emergency Responder">Emergency Responder</h3>
+				</header>
+
+				<!-- WINDOW CONTENT -->
+				<div class="tabSet">
+					<li>
+						<a id="Main" class="tabSelection tabSelection-selected" href="#tabMain">Main</a>
+						<a id="Rotate" class="tabSelection" href="#tabRotate">Rotate</a>
+						<a id="Dev" class="tabSelection" href="#tabDev">Testing</a>
+					</li>
+					<div id="tabMain" class="tabContent">
+						<button name="spawnFire">Spawn Fire</button><br>
+						<button name="reqEnts">Request Entities</button><br>
+						<label>Entity List:</label><br>
+						<div id="entityList"></div>
+					</div>
+					<div id="tabRotate" class="tabContent">
+							<label>Pitch</label><br>
+							<button class="rotate" name="PitchU" data-handler="dispatchEvent" data-params='{"event":4}'>CTRL +</button>
+							<button class="rotate" name="PitchD" data-handler="dispatchEvent" data-params='{"event":5}'>CTRL -</button>
+							<br>
+							<label>Roll</label><br>
+							<button class="rotate" name="RollL" data-handler="dispatchEvent" data-params='{"event":3}'>SHIFT +</button>
+							<button class="rotate" name="RollR" data-handler="dispatchEvent" data-params='{"event":2}'>SHIFT -</button>
+							<br>
+							<label>Yaw</label><br>
+							<button class="rotate" name="YawL" data-handler="dispatchEvent" data-params='{"event":1}'>ALT +</button>
+							<button class="rotate" name="YawR" data-handler="dispatchEvent" data-params='{"event":0}'>ALT -</button>
+					</div>
+					<div id ="tabDev" class="tabContent">
+						<br><div id="test"></div>
+					</div>
+				</div>
+			</div><!-- end constructor-container -->
+		</div><!-- end content-wrapper -->
+	</body>
+</html>

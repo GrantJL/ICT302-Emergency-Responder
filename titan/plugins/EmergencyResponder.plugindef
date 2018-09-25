@@ -1,0 +1,6 @@
+{
+	"Name" : "EmergencyResponder",
+	"BaseDir":"EmergencyResponder",
+	"Icon":"icon.png",
+	"Index":"gui/EmergencyResponder.html"
+}
