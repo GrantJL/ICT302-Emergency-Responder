@@ -13,6 +13,7 @@
 #include <titan/plugin2/ICamera.h>
 #include <titan/plugin2/util/MathHelpers.h>
 #include <titan/plugin2/IScenarioManager.h>
+#include <titan/plugin2/IStaticObject.h>
 
 #include <json/json.h>
 
@@ -38,7 +39,7 @@ shared_ptr<IRenderManager> renderer;
 shared_ptr<IEventManager> events;
 shared_ptr<IWorldManager> world;
 
-set<shared_ptr<IEntity>> entities;
+set<shared_ptr<IEntity>> fires;
 
 // Listener to listen for our UI button event "Plugo::rotate"
 class Listener : public ITitanEventListener
@@ -55,34 +56,43 @@ public:
 			// Get a list of all entities in the scene
 			shared_ptr<IScenarioManager> scene = titanApi->getScenarioManager();
 			
-			Json::Value fire(Json::arrayValue);
-			entities = scene->getEntities(world->getEntityDescriptor("er_wildfire_system"));
-
+			// Json array, this will hold the fire entities
+			Json::Value fireArr(Json::arrayValue);
+			fires = scene->getEntities(world->getEntityDescriptor("er_wildfire_system"));
 			logger << "Fires:" << endl;
-			for (shared_ptr<IEntity> entity : entities)
-			{// Add entity names to Json array
+			for (shared_ptr<IEntity> entity : fires)
+			{// Add fires to Json array
 				logger << "  " << entity->getName() << endl;
-				fire.append(entity->getName());
+
+				Json::Value obj; // Each entity is a json obj with name and id
+				obj["name"] = entity->getName();
+				obj["id"] = entity->getUuid();
+				fireArr.append(obj);
 			}
 
-			set<shared_ptr<IEntity>> ents = scene->getEntities();
+			// This will get SOME buildings, after you shoot them.
+			set<shared_ptr<IStaticObject>> statics = scene->getStaticObjects(renderer->getActiveCamera()->getPosition(), 500.0);
 
-			// Create a new Json array to hold entity names
-			Json::Value names(Json::arrayValue);
-			logger << "Entities:" << endl;
-			for (shared_ptr<IEntity> entity : ents)
+			// Create a new Json array to hold static entities
+			Json::Value staticArr(Json::arrayValue);
+			logger << "Static objects:" << endl;
+			for (shared_ptr<IStaticObject> entity : statics)
 			{// Add entity names to Json array
-				logger << "  " << entity->getName() << endl;
-				names.append(entity->getName());
+				logger << "  " << entity->getDescriptor().defaultEntityName << endl;
+
+				Json::Value obj;
+				obj["name"] = entity->getDescriptor().name;
+				obj["id"] = ""; // Static objects have no uiid (accessible)
+				staticArr.append(obj);
 			}
 
 			Json::Value args;	//Create a Json object
-			args["entities"] = names;
-			args["fires"] = fire;
+			args["buildings"] = staticArr;
+			args["fires"] = fireArr;
 			events->sendTitanEvent("EResp::entities", args);	//Send to event bus with Json
 		}
 		else if (name == "EResp::spawnFire")
-		{
+		{// spawns a wildfire at the camera's position
 			EntityDescriptor desc = world->getEntityDescriptor("er_wildfire_system");
 
 			Vec3d pos = renderer->getActiveCamera()->getPosition();

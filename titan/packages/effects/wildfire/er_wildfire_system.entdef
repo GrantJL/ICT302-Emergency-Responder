@@ -18,10 +18,75 @@
 				"type" : "",
 				"subtype" : ""
             },
+			
+			// From packages/effects/wildfire_system/wildfires.templatedef
+			
+			"Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 200,
+                        "intensity": 200,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 340
+                    }
+                ]
+            },
 
-            "eventSystemScripts" : [
-				"packages/effects/wildfire/er_wildfire_system.js"
-			]
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 0.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 35 ],
+                "exitVelocity": [ 0, 0, 0 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 6,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 0.4,
+                "emissionDelayTime": 340,
+                "emissionDurationTime": 300,
+                "linearDamping": 0.05,
+                "particlesEvolverName": "smokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[3]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 4 ],
+                "exitVelocity": [ 0, 0, 0 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 68,
+                "windInfluence": 1,
+                "emissionAcceleration": 14, 
+                "emissionDeacceleration": 14,
+                "velocityRadius": 3.5,
+                "emissionDelayTime": 0.1,
+                "emissionDurationTime": 360,
+                "linearDamping": 0,
+                "particlesEvolverName": "fireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
 		}
 	]
 }

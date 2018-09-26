@@ -12,6 +12,9 @@ titan/
 *.user
 *.vcxproj.filters
 
+# VC garbage
+*.opendb
+*.db
 
 # Standard CPP ignores
 # Prerequisites

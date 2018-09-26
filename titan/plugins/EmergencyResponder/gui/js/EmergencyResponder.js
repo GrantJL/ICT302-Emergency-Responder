@@ -54,15 +54,27 @@ var EmergencyResponder =
 
     updateEntities:function(name, args)
     {
-        var names = args.entities; // Get array at key "entities"
-        var txt = "<ul>"; // Start a list for innerHTML
+        var fires = args.fires; // Get array at key "entities"
+        var txt = "Fires<ul class='list'>"; // Start a list for innerHTML
         
         // For each obj(String) in names array
-        $.each(names, function(i, v){
-            txt += "<li>" + v + "</li>";
+        $.each(fires, function(i, v){
+            txt += "<li>" + v.name + " [" + v.id + "]</li>";
         })
         
         txt += "</ul>";
+
+        var buildings = args.buildings;
+
+        txt += "Buildings<ul class='list'>"; // Start a list for innerHTML
+        
+        // For each obj(String) in names array
+        $.each(buildings, function(i, v){
+            txt += "<li>" + v.name + "</li>";
+        })
+        
+        txt += "</ul>";
+
         
         // Get args json as a string
         var json = JSON.stringify(args);
