@@ -73,6 +73,7 @@
     <IncludePath>$(SolutionDir)..\titan\plugins\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\titan\plugins\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)$(Configuration)\inters\</IntDir>
+    <OutDir>$(SolutionDir)..\titan\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
@@ -145,6 +146,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\EmergencyResponder.cpp" />
+    <ClCompile Include="src\Listener.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ERPlugin.h" />
+    <ClInclude Include="src\Listener.h" />
+    <ClInclude Include="src\WildfireManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
