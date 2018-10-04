@@ -14,17 +14,6 @@ var EmergencyResponder =
 		window.resizeTo(275, 260);
 		window.moveTo(0, 100);
 
-        // Add button event handlers
-        $('button.rotate').on(
-        {
-            'click':function()
-            {
-                var button = $(this);
-                var params = button.data('params'); // parameters from html button
-                $events.sendEventArgs("EResp::rotate", params); // send to event bus
-            }
-        });
-
         // Request Entities button
         $('button[name=reqEnts]').on(
         {
@@ -35,14 +24,11 @@ var EmergencyResponder =
         });
 
         // Request Entities button
-        $('button[name=spawnFire]').on(
+        $('button[name=initFire]').on(
         {
             'click':function()
             {
-                $events.sendEventArgs("EResp::spawnFire", null);
-                var descriptor = $world.getEntityDescriptorFromName("er_wildfire_system");
-                var fire = $scenario.createEntityECEF(descriptor, posTo);
-                fire.snapToGround();
+                $events.sendEventArgs("EResp::Begin", null);
             }
         });
 
