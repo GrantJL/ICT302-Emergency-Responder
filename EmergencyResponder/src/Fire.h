@@ -13,6 +13,8 @@ public:
 	double getFuel();
 	bool isBurning();
 
+	void step(const double dt);
+
 private:
 	double fuel;
 	bool burning;

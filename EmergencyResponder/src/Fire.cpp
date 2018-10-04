@@ -24,3 +24,12 @@ bool Fire::isBurning()
 {
 	return burning;
 }
+
+void Fire::step(const double dt)
+{
+	if (fuel > 0)
+	{
+		// Reduce fuel
+		// Reduce health of entities.
+	}
+}
