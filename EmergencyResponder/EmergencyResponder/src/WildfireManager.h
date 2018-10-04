@@ -8,6 +8,8 @@
 #include <titan/plugin2/IWorldManager.h>
 #include <titan/plugin2/IEntity.h>
 
+#include "Fire.h"
+
 class WildfireManager
 {
 private:
@@ -17,6 +19,9 @@ private:
 
 	Vec3d initialPosition;
 	bool isInitialized;
+	
+	std::shared_ptr<IEntity> fireOrigin;
+	Fire fire;
 public:
 
 	WildfireManager(std::shared_ptr<ITitan> titanApi)
@@ -36,11 +41,13 @@ public:
 
 	void Step()
 	{
-			renderer->debugLog("Step");
+		renderer->debugLog("Step");
 		if (isInitialized)
 		{
 			renderer->debugLog("Intialized Step");
 			renderer->debugLog(std::to_string(initialPosition.x));
+
+			fire.damageEntitiesAtFireLocation(fireOrigin);
 		}
 	}
 
@@ -56,7 +63,12 @@ public:
 		auto fire = fireList.begin();
 		if ( fire != fireList.end() )
 		{
-			initialPosition = (*fire)->getPosition();
+			fireOrigin = (*fire);
+			initialPosition = fireOrigin->getPosition();
+
+			this->fire.scenario = scenario;
+			this->fire.renderer = renderer;
+
 			return true;
 		}
 		else

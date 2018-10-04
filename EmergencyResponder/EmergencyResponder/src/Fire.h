@@ -6,11 +6,13 @@
 #include "titan/plugin2/IEntity.h"
 #include "titan/plugin2/IScenarioManager.h"
 #include "titan/plugin2/IDamageModel.h"
+#include <titan/plugin2/IRenderManager.h>
 
 class Fire
 {
 public:
 	std::shared_ptr<titan::api2::IScenarioManager> scenario;
+	std::shared_ptr<titan::api2::IRenderManager> renderer;
 
 	Fire();
 	//Fire(const Fire & other); // Copy fires neighbours.
