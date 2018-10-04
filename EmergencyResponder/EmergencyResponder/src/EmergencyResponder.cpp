@@ -1,121 +1,61 @@
+
 #include "titan/plugin2/plugin.h"
 
 #include <fstream>
-#include <Windows.h>
-#include "titan/plugin2/IEntity.h"
-#include "titan/plugin2/ITitan.h"
-#include <titan/plugin2/ITitanEventListener.h>
-#include <titan/plugin2/IEventManager.h>
-#include <titan/plugin2/IEntity.h>
-#include <titan/plugin2/types.h>
-#include <titan/plugin2/IRenderManager.h>
-#include <titan/plugin2/IWorldManager.h>
-#include <titan/plugin2/ICamera.h>
-#include <titan/plugin2/util/MathHelpers.h>
-#include <titan/plugin2/IScenarioManager.h>
-#include <titan/plugin2/IStaticObject.h>
+#include <string>
 
-#include <json/json.h>
+//#include "titan/plugin2/ITitan.h"
+//#include <titan/plugin2/IRenderManager.h>
+//#include <titan/plugin2/IScenarioManager.h>
+//#include <titan/plugin2/IWorldManager.h>
+//#include "titan/plugin2/IEntity.h"
+//#include <titan/plugin2/IEntity.h>
+//#include <titan/plugin2/types.h>
+//#include <titan/plugin2/ICamera.h>
+//#include <titan/plugin2/util/MathHelpers.h>
+//#include <titan/plugin2/IStaticObject.h>
+//#include <json/json.h>
 
-using namespace std;
+#include "ERPlugin.h"
+
 using namespace titan::api2;
-using namespace titan::api2::util;
+//using namespace titan::api2::util;
 
 
-//----------------------------------------------------------
-//                        CONSTANTS
-//----------------------------------------------------------
-const string PLUGIN_NAME = "Emergency Responder";
+//------------------------------------------------------------//
+//                      PLUGIN CONSTANTS                      //
+//------------------------------------------------------------//
+const std::string PLUGIN_NAME = "EmergencyResponder";
 
-//----------------------------------------------------------
-//                      PLUGIN MEMBERS
-//----------------------------------------------------------
-ofstream logger;
-shared_ptr<ITitan> titanApi;
+//------------------------------------------------------------//
+//                      PLUGIN VARIABLES                      //
+//------------------------------------------------------------//
+EmergencyResponder simulation;
+std::ofstream logger;
 
-class Listener; //forward declaration
-shared_ptr<Listener> listener;
-shared_ptr<IRenderManager> renderer;
-shared_ptr<IEventManager> events;
-shared_ptr<IWorldManager> world;
-
-set<shared_ptr<IEntity>> fires;
-
-// Listener to listen for our UI button event "Plugo::rotate"
-class Listener : public ITitanEventListener
+//------------------------------------------------------------//
+//                      PLUGIN FUNCTIONS                      //
+//------------------------------------------------------------//
+void pluginStartup(const std::shared_ptr<ITitan>& api)
 {
-public:
-	void onTitanEvent(const string& name, const Json::Value& params) override
-		
-	{
-		//fading log
-		renderer->debugLog("Event received " + name);
+	simulation.initialize(api);
 
-		if (name == "EResp::request")
-		{
-			// Get a list of all entities in the scene
-			shared_ptr<IScenarioManager> scene = titanApi->getScenarioManager();
-			
-			// Json array, this will hold the fire entities
-			Json::Value fireArr(Json::arrayValue);
-			fires = scene->getEntities(world->getEntityDescriptor("er_wildfire_system"));
-			logger << "Fires:" << endl;
-			for (shared_ptr<IEntity> entity : fires)
-			{// Add fires to Json array
-				logger << "  " << entity->getName() << endl;
+	logger.open(api->getUserDataDirectory() + "\\" + PLUGIN_NAME + ".log");		//possible to do make dir ***\plugins\PLUGIN_NAME
+	logger << "[" << PLUGIN_NAME << "] Plugin Initialised" << std::endl;
+}
 
-				Json::Value obj; // Each entity is a json obj with name and id
-				obj["name"] = entity->getName();
-				obj["id"] = entity->getUuid();
-				fireArr.append(obj);
-			}
+void pluginUpdate(double dt) 
+{
+	simulation.update(dt);
+}
 
-			// This will get SOME buildings, after you shoot them.
-			set<shared_ptr<IStaticObject>> statics = scene->getStaticObjects(renderer->getActiveCamera()->getPosition(), 500.0);
+void pluginShutdown()
+{
+	logger << "[" << PLUGIN_NAME << "] Plugin Shutdown" << std::endl;
+	logger.close();
+}
 
-			// Create a new Json array to hold static entities
-			Json::Value staticArr(Json::arrayValue);
-			logger << "Static objects:" << endl;
-			for (shared_ptr<IStaticObject> entity : statics)
-			{// Add entity names to Json array
-				logger << "  " << entity->getDescriptor().defaultEntityName << endl;
-
-				Json::Value obj;
-				obj["name"] = entity->getDescriptor().name;
-				obj["id"] = ""; // Static objects have no uiid (accessible)
-				staticArr.append(obj);
-			}
-
-			Json::Value args;	//Create a Json object
-			args["buildings"] = staticArr;
-			args["fires"] = fireArr;
-			events->sendTitanEvent("EResp::entities", args);	//Send to event bus with Json
-		}
-		else if (name == "EResp::spawnFire")
-		{// spawns a wildfire at the camera's position
-			EntityDescriptor desc = world->getEntityDescriptor("er_wildfire_system");
-
-			Vec3d pos = renderer->getActiveCamera()->getPosition();
-			Vec3d rotation = MathHelpers::getNorthFacingVector(pos);
-
-			Quat rot;
-			MathHelpers::createGroundAlignedQuaternion(rotation, pos, rot);
-
-			shared_ptr<IScenarioManager> scene = titanApi->getScenarioManager();
-			scene->createEntity(desc, pos, rot);
-
-			Json::Value args;
-			TerrainMaterial mat = world->getSurfaceMaterialBelow(pos);
-			args["material"] = mat;
-			renderer->debugLog(std::to_string(mat));
-			events->sendTitanEvent("EResp::entities", args);
-		}
-	}
-};
-
-//----------------------------------------------------------a
-//                     PLUGIN FUNCTIONS
-//----------------------------------------------------------
+/*
 void pluginStartup(const shared_ptr<ITitan>& api)
 {
 	titanApi = api;
@@ -132,11 +72,6 @@ void pluginStartup(const shared_ptr<ITitan>& api)
 	events->addTitanEventListener("EResp::spawnFire", listener);
 }
 
-void pluginUpdate(double dt)
-{
-
-}
-
 void pluginShutdown()
 {
 	logger.close();
@@ -150,3 +85,4 @@ void pluginShutdown()
 	events = nullptr;
 	titanApi = nullptr;
 }
+*/
