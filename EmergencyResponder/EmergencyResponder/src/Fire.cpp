@@ -1,7 +1,23 @@
 #include "Fire.h"
 
-Fire::Fire()
+#include <titan/plugin2/IEntity.h>
+#include <titan/plugin2/ITitan.h>
+#include <titan/plugin2/IScenarioManager.h>
+#include <titan/plugin2/IDamageModel.h>
+#include <titan/plugin2/IWorldManager.h>
+
+#include <titan/plugin2/util/MathHelpers.h>
+
+
+Fire::Fire(std::shared_ptr<titan::api2::ITitan> api, const titan::api2::Vec3d& position)
+	: titanApi(api)
 {
+	titan::api2::EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("small_wildfire");
+
+	titan::api2::Quat quat;
+	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), position, quat);
+
+	entity = titanApi->getScenarioManager()->createEntity(descriptor, position, quat);
 	fuel = 30;
 }
 
@@ -27,27 +43,31 @@ bool Fire::isBurning()
 
 void Fire::step(const double dt)
 {
+	damageEntitiesAtFireLocation();
 	if (fuel > 0)
 	{
-		// Reduce fuel
-		// Reduce health of entities.
 	}
 }
 
-void Fire::damageEntitiesAtFireLocation(std::shared_ptr<titan::api2::IEntity> fire)
+void Fire::damageEntitiesAtFireLocation()
 {
-	titan::api2::Vec3d pos = fire->getPosition();
-	std::set<std::shared_ptr<titan::api2::IEntity>> entities = scenario->getEntities(pos, radius);
+	// TODO: Report damage done
+
+	titan::api2::Vec3d pos = entity->getPosition();
+	std::set<std::shared_ptr<titan::api2::IEntity>> entities = titanApi->getScenarioManager()->getEntities(pos, radius);
 	std::set<std::shared_ptr<titan::api2::IEntity>>::iterator entityIterator;
-		renderer->debugLog(std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z));
+
 	for (entityIterator = entities.begin(); entityIterator != entities.end(); entityIterator++)
 	{
 		std::shared_ptr<titan::api2::IDamageModel> damageModel = (*entityIterator)->getDamageModel();
 
 		if (!damageModel)
+		{//Entity cannot be damaged
 			continue;
-
-		if(damageModel->getHealthNormalized() > 0)
-			damageModel->setHealthNormalized(damageModel->getHealthNormalized() - 0.5);
+		}
+		else if (damageModel->getHealthNormalized() > 0)
+		{
+			damageModel->setHealthNormalized(damageModel->getHealthNormalized() - 0.2);
+		}
 	}
 }

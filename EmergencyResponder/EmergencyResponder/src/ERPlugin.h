@@ -55,8 +55,9 @@ public:
 
 		if (elapsedTime >= STEP_INTERVAL)
 		{
+			wildfire->Step(elapsedTime);
+
 			elapsedTime = 0;
-			wildfire->Step();
 		}
 	}
 

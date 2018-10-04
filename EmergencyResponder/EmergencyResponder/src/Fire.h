@@ -3,18 +3,24 @@
 
 #include <memory>
 
-#include "titan/plugin2/IEntity.h"
-#include "titan/plugin2/IScenarioManager.h"
-#include "titan/plugin2/IDamageModel.h"
-#include <titan/plugin2/IRenderManager.h>
+#include <titan/plugin2/types.h>
 
 class Fire
 {
-public:
-	std::shared_ptr<titan::api2::IScenarioManager> scenario;
-	std::shared_ptr<titan::api2::IRenderManager> renderer;
+private:
+	// Titan Pointers
+	std::shared_ptr<titan::api2::ITitan> titanApi;
 
-	Fire();
+	std::shared_ptr<titan::api2::IEntity> entity;
+
+	double fuel;
+	bool burning;
+
+	const double radius = 5.0;
+	const double damage = 1.0;
+
+public:
+	Fire(std::shared_ptr<titan::api2::ITitan> titanApi, const titan::api2::Vec3d& position);
 	//Fire(const Fire & other); // Copy fires neighbours.
 
 	void setFuel(const double fuelValue);
@@ -25,14 +31,8 @@ public:
 
 	void step(const double dt);
 
-	void damageEntitiesAtFireLocation(std::shared_ptr<titan::api2::IEntity> fire);
+	void damageEntitiesAtFireLocation();
 
-private:
-	double fuel;
-	bool burning;
-
-	const double radius = 5.0;
-	const double damage = 1.0;
 
 };
 
