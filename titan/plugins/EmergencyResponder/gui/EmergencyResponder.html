@@ -23,7 +23,7 @@
 
 	<body>
 		<div class="content-wrapper">
-			<div class="constructor-container">
+			<div class="constructor-container" style="height: 100%; width: 99%;">
 
 				<!-- HEADER BAR -->
 				<header class="dragdrop">
@@ -32,13 +32,22 @@
 				</header>
 
 				<!-- WINDOW CONTENT -->
-				<div class="tabSet">
+				<div class="tabSet" style="height: 90%; width: 99%;">
 					<li>
 						<a id="Main" class="tabSelection tabSelection-selected" href="#tabMain">Main</a>
 						<a id="Entities" class="tabSelection" href="#tabEntities">Entities</a>
 						<a id="Dev" class="tabSelection" href="#tabDev">Testing</a>
 					</li>
 					<div id="tabMain" class="tabContent">
+						<label>Radius:</label><br>
+						<input id="radius" type="range" name="radius" min="0.1" max="20" value="5" step="0.1">
+						<input id="radiusT" type="text" size="5" value="5" readonly>
+						<br>
+						<label>Damage:</label><br>
+						<input id="damage" type="range" name="damage" min="0" max="1" value="0.2" step="0.001">
+						<input id="damageT" type="text" size="5" value="0.2" readonly>
+						<br>
+
 						<button name="initFire">Start Wildfire</button><br>
 					</div>
 					<div id="tabEntities" class="tabContent">

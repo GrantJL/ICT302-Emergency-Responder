@@ -2,6 +2,12 @@
 // Get Titan interfaces
 var $events = $eview.$query_interface("ti::js::TitanEventInterface.instance");
 
+var Settings = 
+{
+    "radius": 2,
+    "damage": 0.2
+}
+
 var EmergencyResponder = 
 {
 
@@ -11,7 +17,7 @@ var EmergencyResponder =
     init:function()
     {
         // Set window size and position on screen
-		window.resizeTo(275, 260);
+		window.resizeTo(300, 460);
 		window.moveTo(0, 100);
 
         // Request Entities button
@@ -21,6 +27,18 @@ var EmergencyResponder =
             {
                 $events.sendEventArgs("EResp::request", null);
             }
+        });
+
+
+        $('#radius').change(function() {
+            $('#radiusT').val($('#radius').val());
+            Settings.radius = parseFloat($('#radius').val());
+            $events.sendEventArgs("EResp::Settings", Settings);
+        });
+        $('#damage').change(function() {
+            $('#damageT').val($('#damage').val());
+            Settings.damage = parseFloat($('#damage').val());
+            $events.sendEventArgs("EResp::Settings", Settings);
         });
 
         // Request Entities button

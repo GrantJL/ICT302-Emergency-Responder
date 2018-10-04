@@ -47,6 +47,14 @@ public:
 		}
 	}
 
+	void SetSettings(const Json::Value& params)
+	{
+		titanApi->getRenderManager()->debugLog("rad");
+		titanApi->getRenderManager()->debugLog( std::to_string(params["radius"].asDouble()) );
+		titanApi->getRenderManager()->debugLog("dam");
+		titanApi->getRenderManager()->debugLog(std::to_string(params["damage"].asDouble()));
+	}
+
 	bool initializePosition()
 	{
 		std::set<std::shared_ptr<IEntity>> fireList;
