@@ -73,7 +73,7 @@
     <IncludePath>$(SolutionDir)..\titan\plugins\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\titan\plugins\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)$(Configuration)\inters\</IntDir>
-    <OutDir>$(SolutionDir)..\titan\plugins\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
