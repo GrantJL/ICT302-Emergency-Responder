@@ -40,8 +40,8 @@ public:
 		scenario = pluginApi->getScenarioManager();
 		world = pluginApi->getWorldManager();
 
-		wildfire = std::make_shared<WildfireManager>();
-		wildfire->renderer = renderer;
+		wildfire = std::make_shared<WildfireManager>(pluginApi);
+
 
 		listener = std::make_shared<Listener>();
 		listener->wildfire = wildfire;
@@ -55,8 +55,9 @@ public:
 
 		if (elapsedTime >= STEP_INTERVAL)
 		{
+			wildfire->Step(elapsedTime);
+
 			elapsedTime = 0;
-			
 		}
 	}
 

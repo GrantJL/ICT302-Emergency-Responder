@@ -2,27 +2,28 @@
 #ifndef ER_WILDFIRE_MANAGER_H_
 #define ER_WILDFIRE_MANAGER_H_
 
-#include <titan/plugin2/ITitan.h>X
+#include <titan/plugin2/ITitan.h>
 #include <titan/plugin2/IRenderManager.h>
 #include <titan/plugin2/IScenarioManager.h>
 #include <titan/plugin2/IWorldManager.h>
 #include <titan/plugin2/IEntity.h>
 
+#include "Fire.h"
+
 class WildfireManager
 {
 private:
-	std::shared_ptr<IRenderManager> renderer;		//Debug logging 
-	std::shared_ptr<IScenarioManager> scenario;
-	std::shared_ptr<IWorldManager> world;
+	std::shared_ptr<ITitan> titanApi;
 
 	Vec3d initialPosition;
 	bool isInitialized;
+	
+	std::shared_ptr<IEntity> controlEntity;
+	std::shared_ptr<Fire> fireOrigin;		// to be replaced with fire data structure
 public:
 
-	WildfireManager(std::shared_ptr<ITitan> titanApi)
-		: renderer(titanApi->getRenderManager()),
-		  scenario(titanApi->getScenarioManager()),
-		  world(titanApi->getWorldManager()),
+	WildfireManager(std::shared_ptr<ITitan> api)
+		: titanApi(api),
 		  isInitialized(false)
 	{
 	
@@ -30,33 +31,36 @@ public:
 
 	void Begin()
 	{
-		renderer->debugLog("Begin");
-		isInitialized = initializaPosition();
+		titanApi->getRenderManager()->debugLog("Begin");
+		isInitialized = initializePosition();
 	}
 
-	void Step()
+	void Step(double dt)
 	{
-			renderer->debugLog("Step");
+		titanApi->getRenderManager()->debugLog("Step");
 		if (isInitialized)
 		{
-			renderer->debugLog("Intialized Step");
-			renderer->debugLog(std::to_string(initialPosition.x));
+			titanApi->getRenderManager()->debugLog("Intialized Step");
+			titanApi->getRenderManager()->debugLog(std::to_string(initialPosition.x));
+
+			fireOrigin->step(dt);
 		}
 	}
 
-	bool initializaPosition()
+	bool initializePosition()
 	{
 		std::set<std::shared_ptr<IEntity>> fireList;
 
-		if (scenario)
-		{// Get the wildfires in the scene
-			fireList = scenario->getEntities(world->getEntityDescriptor("er_wildfire_control_object"));
-		}
+		fireList = titanApi->getScenarioManager()->getEntities(titanApi->getWorldManager()->getEntityDescriptor("er_wildfire_control_object"));
 
 		auto fire = fireList.begin();
 		if ( fire != fireList.end() )
 		{
-			initialPosition = (*fire)->getPosition();
+			controlEntity = (*fire);
+			initialPosition = controlEntity->getPosition();
+			
+			fireOrigin = std::make_shared<Fire>(titanApi, initialPosition);
+
 			return true;
 		}
 		else

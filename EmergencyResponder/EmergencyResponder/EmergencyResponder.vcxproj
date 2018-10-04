@@ -146,10 +146,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\EmergencyResponder.cpp" />
+    <ClCompile Include="src\Fire.cpp" />
     <ClCompile Include="src\Listener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ERPlugin.h" />
+    <ClInclude Include="src\Fire.h" />
     <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\WildfireManager.h" />
   </ItemGroup>
