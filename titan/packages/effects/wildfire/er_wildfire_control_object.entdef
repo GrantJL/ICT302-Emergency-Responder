@@ -1,0 +1,23 @@
+{
+	"descriptors" :
+	[
+		{
+			"Name"			: "ER Wildfire Control Object",
+			"entityKeyName"	: "er_wildfire_control_object",
+			"Path"			: "effects/graphEffects/fire",
+			"ClassName"		: "core::tStaticObject",
+			"Filter"		: "Object",
+			"Blueprint"		: "scenery, nature, null, null, null",
+
+			"unitData" :
+			{
+				"unitSymbol" : "WAR.AIRTRK.MIL.LTA",
+				"defaultAllianceName" : "NEUTRAL",
+				"countryOrigin" : "",
+				"corps" : "",
+				"type" : "",
+				"subtype" : ""
+            }	
+		}
+	]
+}
