@@ -8,6 +8,10 @@ void Listener::onTitanEvent(const std::string& name, const Json::Value& params)
 	{
 		wildfire->Begin();
 	}
+	else if (name == "EResp::DamageReport")
+	{
+		wildfire->CreateDamageReport();
+	}
 
 	/*
 	//fading log

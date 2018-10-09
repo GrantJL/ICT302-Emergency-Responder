@@ -8,12 +8,16 @@
 #include <titan/plugin2/IWorldManager.h>
 #include <titan/plugin2/IEntity.h>
 
+#include "Utility.h"
 #include "Fire.h"
 
 class WildfireManager
 {
 private:
 	std::shared_ptr<ITitan> titanApi;
+
+	/// Entity UUID, Entity last recorded health
+	std::map<std::string, double> damagedEntities;
 
 	Vec3d initialPosition;
 	bool isInitialized;
@@ -31,21 +35,36 @@ public:
 
 	void Begin()
 	{
-		titanApi->getRenderManager()->debugLog("Begin");
+		//titanApi->getRenderManager()->debugLog("Begin");
 		isInitialized = initializePosition();
 	}
 
 	void Step(double dt)
 	{
-		titanApi->getRenderManager()->debugLog("Step");
+		//titanApi->getRenderManager()->debugLog("Step");
 		if (isInitialized)
 		{
-			titanApi->getRenderManager()->debugLog("Intialized Step");
-			titanApi->getRenderManager()->debugLog(std::to_string(initialPosition.x));
+			if (dt > 0)
+			{
+				//titanApi->getRenderManager()->debugLog("Intialized Step");
+				//titanApi->getRenderManager()->debugLog(std::to_string(initialPosition.x));
 
-			fireOrigin->step(dt);
+				fireOrigin->step(dt, damagedEntities);
+			}
 		}
 	}
+
+	void CreateDamageReport()
+	{
+		logtxt(titanApi) << "Damage Report" << std::endl;
+		for (auto it = damagedEntities.begin(); it != damagedEntities.end(); it++)
+		{
+			logtxt(titanApi) << (*it).first << "  " << (*it).second << std::endl;
+		}
+		logtxt(titanApi) << "END Damage Report" << std::endl;
+	}
+
+private:
 
 	bool initializePosition()
 	{

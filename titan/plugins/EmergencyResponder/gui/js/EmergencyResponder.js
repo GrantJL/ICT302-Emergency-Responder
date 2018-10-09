@@ -32,6 +32,17 @@ var EmergencyResponder =
             }
         });
 
+         // Request Entities button
+         $('button[name=dmgReport]').on(
+            {
+                'click':function()
+                {
+                    $events.sendEventArgs("EResp::DamageReport", null);
+                }
+            });
+
+        
+
         // Register event handler for incoming events
         $global.titanEventHandlers["EResp::entities"] = EmergencyResponder.updateEntities;
 
