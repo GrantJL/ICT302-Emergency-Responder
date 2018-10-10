@@ -24,6 +24,7 @@ private:
 	
 	std::shared_ptr<IEntity> controlEntity;
 	std::shared_ptr<Fire> fireOrigin;		// to be replaced with fire data structure
+
 public:
 
 	WildfireManager(std::shared_ptr<ITitan> api)
@@ -48,8 +49,8 @@ public:
 			{
 				//titanApi->getRenderManager()->debugLog("Intialized Step");
 				//titanApi->getRenderManager()->debugLog(std::to_string(initialPosition.x));
-
-				fireOrigin->step(dt, damagedEntities);
+				if(fireOrigin->isBurning())
+					fireOrigin->step(dt, damagedEntities);
 			}
 		}
 	}
@@ -73,7 +74,7 @@ private:
 		fireList = titanApi->getScenarioManager()->getEntities(titanApi->getWorldManager()->getEntityDescriptor("er_wildfire_control_object"));
 
 		auto fire = fireList.begin();
-		if ( fire != fireList.end() )
+		if ( fire != fireList.end())
 		{
 			controlEntity = (*fire);
 			initialPosition = controlEntity->getPosition();

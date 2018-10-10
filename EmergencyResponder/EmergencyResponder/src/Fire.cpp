@@ -16,16 +16,18 @@ double Fire::vehicleModifier = 0.5;
 double Fire::buildingModifier = 0.25;
 double Fire::maxFuel = 600;
 
-Fire::Fire(std::shared_ptr<titan::api2::ITitan> api, const titan::api2::Vec3d& position)
+Fire::Fire(std::shared_ptr<titan::api2::ITitan> api, const titan::api2::Vec3d& newPosition)
 	: titanApi(api)
 {
 	titan::api2::EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("small_wildfire");
 
 	titan::api2::Quat quat;
-	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), position, quat);
+	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), newPosition, quat);
 
-	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, position, quat);
-	fuel = maxFuel;
+	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, newPosition, quat);
+	fuel = maxFuel * getTreeDensity(titanApi, newPosition) * getSurfaceCombustion(titanApi, newPosition);
+	position = newPosition;
+	titanApi->getRenderManager()->debugLog("Fire fuel set to " + std::to_string(fuel));
 }
 
 void Fire::setFuel(const double fuelValue)
@@ -54,8 +56,78 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 	{
 		double fuelPercent = (maxFuel - fuel) / maxFuel;
 		fuelFactor = sin(fuelPercent * (0.8 * M_PI) + (0.1 * M_PI));
+		fuel -= dt;
+
+		//titanApi->getRenderManager()->debugLog("Fuel at: " + std::to_string(fuel));
 
 		damageEntitiesAtFireLocation(dt, damagedEntities);
+		if (willPropagate())
+		{
+			if (willPropagate(CONST_PROB[N]) && !propped[N])
+			{
+				titanApi->getRenderManager()->debugLog("Proped north");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
+				pos.x += 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[N] = true;
+				}
+			}
+			if (willPropagate(CONST_PROB[E]) && !propped[E])
+			{
+				titanApi->getRenderManager()->debugLog("Proped east");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
+				pos.y += 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[E] = true;
+				}
+			}
+			if (willPropagate(CONST_PROB[S]) && !propped[S])
+			{
+				titanApi->getRenderManager()->debugLog("Proped south");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
+				pos.x -= 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[S] = true;
+				}
+			}
+			if (willPropagate(CONST_PROB[W]) && !propped[W])
+			{
+				titanApi->getRenderManager()->debugLog("Proped west");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
+				pos.y -= 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[W] = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		//titanApi->getScenarioManager()->removeEntity(fireEntity);
+		burning = false;
+		titanApi->getRenderManager()->debugLog("Fire burned out");
+	}
+	// Step children
+	std::vector<Fire>::iterator child;
+	for (child = children.begin(); child != children.end(); child++)
+	{
+		child->step(dt, damagedEntities);
 	}
 }
 
@@ -96,4 +168,33 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 			damagedEntities[entity->getUuid()] = damageModel->getHealthNormalized();
 		}
 	}
+}
+
+bool Fire::willPropagate()
+{
+	return willPropagate(30);
+}
+
+bool Fire::willPropagate(const double percent)
+{
+	int value = rand() % 100;
+	if (value < percent)
+		return true;
+	return false;
+}
+
+bool Fire::fireAtPosition(const titan::api2::Vec3d position)
+{
+	std::set<std::shared_ptr<titan::api2::IEntity>> entities = titanApi->getScenarioManager()->getEntities(position, 1);
+	std::set<std::shared_ptr<titan::api2::IEntity>>::iterator entityIterator;
+	for (entityIterator = entities.begin(); entityIterator != entities.end(); entityIterator++)
+	{
+		std::shared_ptr<titan::api2::IEntity> entity = (*entityIterator);
+		if (entity->getDescriptor().path == "effects/graphEffects/fire")
+		{
+			titanApi->getRenderManager()->debugLog("Wildfire at location");
+			return true;
+		}
+	}
+	return false;
 }

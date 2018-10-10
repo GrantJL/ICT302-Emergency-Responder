@@ -5,6 +5,18 @@
 
 #include <titan/plugin2/types.h>
 
+enum FIRE_SPREAD_DIR
+{
+	N = 0,
+	NE = 1,
+	E = 2,
+	SE = 3,
+	S = 4,
+	SW = 5,
+	W = 6,
+	NW = 7
+};
+
 class Fire
 {
 private:
@@ -16,12 +28,25 @@ private:
 	// Titan Pointers
 	std::shared_ptr<titan::api2::ITitan> titanApi;
 	std::shared_ptr<titan::api2::IEntity> fireEntity;
+	std::vector<Fire> children;
 
 	double fuel;
+	titan::api2::Vec3d position;
 	bool burning;
+	bool propped[8] =
+	{
+		false, false, false,
+		false, false, false,
+		false, false
+	};
 
 	const double radius = 5.0;
 	const double damage = 0.2;
+
+	const double CONST_PROB[8] = 
+							{ 12.5, 12.5, 12.5,
+							  12.5, /*0*/ 12.5,
+							  12.5, 12.5, 12.5};
 
 public:
 
@@ -60,6 +85,9 @@ private:
 	* @param damagedEntities a map of entities UUID and their health.
 	*/
 	void  damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities);
+	bool willPropagate();
+	bool willPropagate(const double percent);
+	bool fireAtPosition(const titan::api2::Vec3d position);
 
 };
 
