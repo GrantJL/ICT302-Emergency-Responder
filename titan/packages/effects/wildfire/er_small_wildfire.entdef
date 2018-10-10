@@ -1,0 +1,15 @@
+{
+	"descriptors" :
+	[
+		{
+			"Name"			: "ER Small Fire",
+			"entityKeyName"	: "er_small_wildfire",
+			"Path"			: "effects/graphEffects/fire",
+			"ClassName"		: "core::tStaticObject",
+
+            "template:inherit" : "er_wildfire_smoke_effects_small",
+
+            "agingComponent": { "maxAge": 465 }
+		}
+	]
+}
