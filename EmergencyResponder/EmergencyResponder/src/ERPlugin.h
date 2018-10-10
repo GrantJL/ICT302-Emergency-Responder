@@ -47,6 +47,7 @@ public:
 		listener->wildfire = wildfire;
 
 		events->addTitanEventListener("EResp::Begin", listener);
+		events->addTitanEventListener("EResp::DamageReport", listener);
 	}
 
 	void update(double dt) 
