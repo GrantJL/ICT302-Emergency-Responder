@@ -1,0 +1,593 @@
+{
+    "templateDefinitions" :
+	[
+        {
+            "template:define" : "er_wildfire_smoke_effects_small",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 20,
+                        "intensity": 20,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 340
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 0.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 20, 100 ],
+                "exitVelocity": [ 0, 0, 5 ],
+                "gravityInfluence": -0.08, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 4.6,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 360,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 4 ],
+                "exitVelocity": [ 0, 0, 0 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 12,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 3.5,
+                "emissionDelayTime": 0.1,
+                "emissionDurationTime": 360,
+                "linearDamping": 0,
+                "particlesEvolverName": "fireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+		},
+        
+        {
+            "template:define" : "er_wildfire_smoke_effects_med",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 30,
+                        "intensity": 30,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 540
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 1
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 20, 120 ],
+                "exitVelocity": [ 0, 0, 5 ],
+                "gravityInfluence": -0.1, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 6.6,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 560,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 6 ],
+                "exitVelocity": [ 0, 0, 0 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 16,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 4.5,
+                "emissionDelayTime": 0.1,
+                "emissionDurationTime": 560,
+                "linearDamping": 0,
+                "particlesEvolverName": "fireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+        },
+        
+        {
+            "template:define" : "er_wildfire_smoke_effects_large",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 50,
+                        "intensity": 50,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 740
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 1.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 20, 160 ],
+                "exitVelocity": [ 0, 0, 5 ],
+                "gravityInfluence": -0.12, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 10.0,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 760,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 7 ],
+                "exitVelocity": [ 0, 0, 6 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 24,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 4.5,
+                "emissionDelayTime": 0.1,
+                "emissionDurationTime": 760,
+                "linearDamping": 0,
+                // "particlesEvolverName": "fireEvolver",
+                "particlesEvolverName": "forestFireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+        },
+        
+        {
+            "template:define" : "er_wildfire_smoke_effects_firestorm",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 75,
+                        "intensity": 75,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 740
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 1.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 3,
+                "relativePositions": [ 
+                    [ 3, 0, -10 ],
+                    [ 0, 5, -10 ],
+                    [ -5, 0, -10 ],
+                    [ 3, 0, -10 ],
+                    [ 0, 5, -10 ],
+                    [ -5, 0, -10 ]
+                ],
+                "maxLifeTimeBounds": [ 20, 160 ],
+                "exitVelocity": [ 0, 0, 0 ],
+               "gravityInfluence": -0.14, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 10.0,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 960,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 5,
+                "relativePositions": [ 
+                    [ 3, 0, 0 ],
+                    [ 0, 5, 0 ],
+                    [ -5, 0, 0 ],
+                    [ 0, -4, 0 ],
+                    [ 0, 0, 0 ],
+                    [ 3, 0, 0 ],
+                    [ 0, 5, 0 ],
+                    [ -5, 0, 0 ],
+                    [ 0, -4, 0 ],
+                    [ 0, 0, 0 ]
+                ],
+                "maxLifeTimeBounds": [ 0, 7 ],
+                "exitVelocity": [ 0, 0, 6 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 36,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 7.5,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 960,
+                "linearDamping": 0.05,
+                // "particlesEvolverName": "fireEvolver",
+                "particlesEvolverName": "forestFireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+        },
+
+        {
+            "template:define" : "er_wildfire_smoke_effects_small_burnt",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 20,
+                        "intensity": 20,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 340
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 0.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 20, 100 ],
+                "exitVelocity": [ 0, 0, 5 ],
+                "gravityInfluence": -0.08, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 4.6,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 360,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 4 ],
+                "exitVelocity": [ 0, 0, 0 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 12,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 3.5,
+                "emissionDelayTime": 0.1,
+                "emissionDurationTime": 360,
+                "linearDamping": 0,
+                "particlesEvolverName": "fireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+		},
+        
+        {
+            "template:define" : "er_wildfire_smoke_effects_med_burnt",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 30,
+                        "intensity": 30,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 540
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 1
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 20, 120 ],
+                "exitVelocity": [ 0, 0, 5 ],
+                "gravityInfluence": -0.1, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 6.6,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 560,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 0, 6 ],
+                "exitVelocity": [ 0, 0, 0 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 16,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 4.5,
+                "emissionDelayTime": 0.1,
+                "emissionDurationTime": 560,
+                "linearDamping": 0,
+                "particlesEvolverName": "fireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+        },
+        
+        {
+            "template:define" : "er_wildfire_smoke_effects_large_burnt",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 0.75, 0.75, 0.75, 0.0 ],
+                        "size": 0,
+                        "range": 50,
+                        "intensity": 50,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 740
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 1.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 1,
+                "relativePositions": [ [ 0, 0, 0 ]  ],
+                "maxLifeTimeBounds": [ 20, 160 ],
+                "exitVelocity": [ 0, 0, 5 ],
+                "gravityInfluence": -0.12, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1, 
+                "velocityRadius": 10.0,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 760,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            }
+        },
+        
+        {
+            "template:define" : "er_wildfire_smoke_effects_firestorm_burnt",
+
+            "Lights": {
+                "lightInstances": [
+                    {
+                        "name": "fire_glow",
+                        "type": "Point",
+                        "color": [ 3.0, 0.75, 0.15, 0.0 ],
+                        "size": 0,
+                        "range": 75,
+                        "intensity": 75,
+                        "fadeout": 20,
+                        "position": [0, 0, 3],
+                        "active": true,
+                        "offTimer": 740
+                    }
+                ]
+            },
+
+            "AudioSource":{
+                "name":"fire_source",
+                "clips":[
+                    {
+                        "name":"fire",
+                        "path":"packages/effects/graphEffects/fire.ogg",
+                        "loop":true
+                    }
+                ],
+                "playOnCreate":true,
+                "gain":0.5,
+                "refdistance": 1.5
+            },
+
+            "smokeTrail[1]":{
+                "activeEmitters": 3,
+                "relativePositions": [ 
+                    [ 3, 0, -10 ],
+                    [ 0, 5, -10 ],
+                    [ -5, 0, -10 ],
+                    [ 3, 0, -10 ],
+                    [ 0, 5, -10 ],
+                    [ -5, 0, -10 ]
+                ],
+                "maxLifeTimeBounds": [ 20, 160 ],
+                "exitVelocity": [ 0, 0, 0 ],
+               "gravityInfluence": -0.14, 
+                "emissionRate": 1,
+                "windInfluence": 1,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 10.0,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 960,
+                "linearDamping": 0.25,
+                "particlesEvolverName": "wildfireSmokeEvolver",
+                "particlesTextureName": "textures/Particles/smoke/smoke_04.dds"
+            },
+
+            "smokeTrail[2]":{
+                "activeEmitters": 5,
+                "relativePositions": [ 
+                    [ 3, 0, 0 ],
+                    [ 0, 5, 0 ],
+                    [ -5, 0, 0 ],
+                    [ 0, -4, 0 ],
+                    [ 0, 0, 0 ],
+                    [ 3, 0, 0 ],
+                    [ 0, 5, 0 ],
+                    [ -5, 0, 0 ],
+                    [ 0, -4, 0 ],
+                    [ 0, 0, 0 ]
+                ],
+                "maxLifeTimeBounds": [ 0, 7 ],
+                "exitVelocity": [ 0, 0, 6 ],
+                "gravityInfluence": -0.2, 
+                "emissionRate": 36,
+                "windInfluence": 0.5,
+                "emissionAcceleration": 1, 
+                "emissionDeacceleration": 1,
+                "velocityRadius": 7.5,
+                "emissionDelayTime": 0,
+                "emissionDurationTime": 960,
+                "linearDamping": 0.05,
+                // "particlesEvolverName": "fireEvolver",
+                "particlesEvolverName": "forestFireEvolver",
+                "particlesTextureName": "textures/Particles/fire/fire_01.dds"
+            }
+        }
+    ]
+}
