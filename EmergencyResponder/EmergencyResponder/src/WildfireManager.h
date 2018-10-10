@@ -14,6 +14,9 @@ class WildfireManager
 private:
 	std::shared_ptr<ITitan> titanApi;
 
+	/// Probability vector of fire spread directions (based on wind direction/speed)
+	std::vector<double> propagationProb;
+
 	/// Entity UUID, Entity last recorded health
 	std::map<std::string, double> damagedEntities;
 
@@ -33,6 +36,7 @@ public:
 	void CreateDamageReport();
 
 private:
+	void updatePropagationmatrix();
 	bool initializePosition();
 };
 
