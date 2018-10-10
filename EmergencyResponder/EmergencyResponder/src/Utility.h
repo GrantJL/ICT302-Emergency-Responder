@@ -19,13 +19,13 @@ static double getSurfaceCombustion(const Vec3d& position)
 }
 
 
-static std::ofstream& logtxt(const std::shared_ptr<ITitan>& api/*, const std::string& message*/)
+static std::shared_ptr<std::ofstream> logtxt(const std::shared_ptr<ITitan>& api/*, const std::string& message*/)
 {
-	static std::ofstream logger;
+	static std::shared_ptr<std::ofstream> logger = std::make_shared<std::ofstream>();
 
-	if (!logger.is_open())
+	if (!logger->is_open())
 	{
-		logger.open(api->getUserDataDirectory() + "\\" + "ER" + ".log");
+		logger->open(api->getUserDataDirectory() + "\\" + "ER" + ".log");
 	}
 
 	return logger; // logger << message << std::endl;

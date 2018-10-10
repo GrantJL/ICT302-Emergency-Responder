@@ -153,6 +153,8 @@
     <ClInclude Include="src\ERPlugin.h" />
     <ClInclude Include="src\Fire.h" />
     <ClInclude Include="src\Listener.h" />
+    <ClInclude Include="src\TitanResources.h" />
+    <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\WildfireManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
