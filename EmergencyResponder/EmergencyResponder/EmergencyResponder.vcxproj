@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -148,11 +148,15 @@
     <ClCompile Include="src\EmergencyResponder.cpp" />
     <ClCompile Include="src\Fire.cpp" />
     <ClCompile Include="src\Listener.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
+    <ClCompile Include="src\WildfireManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ERPlugin.h" />
     <ClInclude Include="src\Fire.h" />
     <ClInclude Include="src\Listener.h" />
+    <ClInclude Include="src\TitanResources.h" />
+    <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\WildfireManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
