@@ -2,7 +2,7 @@
 #ifndef ER_LISTENER_H_
 #define ER_LISTENER_H_
 
-#include <titan/plugin2/ITitanEventListener.h>
+#include "TitanResources.h"
 
 using namespace titan::api2;
 
