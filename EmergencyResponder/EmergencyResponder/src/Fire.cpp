@@ -2,29 +2,21 @@
 
 #include <math.h>
 
-#include <titan/plugin2/IEntity.h>
-#include <titan/plugin2/ITitan.h>
-#include <titan/plugin2/IScenarioManager.h>
-#include <titan/plugin2/IDamageModel.h>
-#include <titan/plugin2/IWorldManager.h>
-
-#include <titan/plugin2/util/MathHelpers.h>
-
+#include "TitanResources.h"
 #include "Utility.h"
 
 double Fire::vehicleModifier = 0.5;
 double Fire::buildingModifier = 0.25;
 double Fire::maxFuel = 600;
 
-Fire::Fire(std::shared_ptr<titan::api2::ITitan> api, const titan::api2::Vec3d& position)
-	: titanApi(api)
+Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& position)
+	: titanApi(api), burning(true)
 {
-	titan::api2::EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("small_wildfire");
+	EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire");
 
-	titan::api2::Quat quat;
-	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), position, quat);
+	util::MathHelpers::createGroundAlignedQuaternion(Vec3d(1, 0, 0), position, fireRotation);
 
-	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, position, quat);
+	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, position, fireRotation);
 	fuel = maxFuel;
 }
 
@@ -56,27 +48,38 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 		fuelFactor = sin(fuelPercent * (0.8 * M_PI) + (0.1 * M_PI));
 
 		damageEntitiesAtFireLocation(dt, damagedEntities);
+
+		fuel -= (60 * dt);
+	}
+	else if (burning)
+	{
+		burning = false;
+
+		titanApi->getScenarioManager()->removeEntity(fireEntity);
+
+		EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire_burnt");
+		fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, firePosition, fireRotation);
 	}
 }
 
 void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities)
 {
 	// Get entities in the radius of the fire.
-	titan::api2::Vec3d pos = fireEntity->getPosition();
-	std::set<std::shared_ptr<titan::api2::IEntity>> entities = titanApi->getScenarioManager()->getEntities(pos, radius);
-	std::set<std::shared_ptr<titan::api2::IEntity>>::iterator entityIterator;
+	Vec3d pos = fireEntity->getPosition();
+	std::set<std::shared_ptr<IEntity>> entities = titanApi->getScenarioManager()->getEntities(pos, radius);
+	std::set<std::shared_ptr<IEntity>>::iterator entityIterator;
 
 	for (entityIterator = entities.begin(); entityIterator != entities.end(); entityIterator++)
 	{
-		std::shared_ptr<titan::api2::IEntity> entity = (*entityIterator);
-		std::shared_ptr<titan::api2::IDamageModel> damageModel = entity->getDamageModel();
+		std::shared_ptr<IEntity> entity = (*entityIterator);
+		std::shared_ptr<IDamageModel> damageModel = entity->getDamageModel();
 
 		// When the entity has a damage model AND still has health
 		if (damageModel && damageModel->getHealthNormalized() > 0)
 		{
 			// Calculate damage based on distance (linear 1.0 - 0.0)
-			titan::api2::Vec3d diff = titan::api2::util::MathHelpers::subtract(entity->getPosition(), pos);
-			double distance = titan::api2::util::MathHelpers::magnitude(diff);
+			Vec3d diff = util::MathHelpers::subtract(entity->getPosition(), pos);
+			double distance = util::MathHelpers::magnitude(diff);
 			double distFactor = (radius - distance) / radius;
 
 			// Calculate the damage to deal
@@ -91,7 +94,7 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 			// Apply the damage to the entity
 			damageModel->setHealthNormalized(damageModel->getHealthNormalized() - calculatedDamage/*0.2*/);
 
-			logtxt(titanApi) << entity->getUuid() << " " << damageModel->getHealthNormalized() << std::endl;
+			//logtxt(titanApi) << entity->getUuid() << " " << damageModel->getHealthNormalized() << std::endl;
 
 			damagedEntities[entity->getUuid()] = damageModel->getHealthNormalized();
 		}

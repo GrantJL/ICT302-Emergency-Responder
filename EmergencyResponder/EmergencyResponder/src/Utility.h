@@ -8,28 +8,10 @@
 
 using namespace titan::api2;
 
-static double getTreeDensity(const Vec3d& position)
-{
-	return 1.0;
-}
+static double getTreeDensity(const Vec3d& position);
 
-static double getSurfaceCombustion(const Vec3d& position)
-{
-	return 1.0;
-}
+static double getSurfaceCombustion(const Vec3d& position);
 
-
-static std::ofstream& logtxt(const std::shared_ptr<ITitan>& api/*, const std::string& message*/)
-{
-	static std::ofstream logger;
-
-	if (!logger.is_open())
-	{
-		logger.open(api->getUserDataDirectory() + "\\" + "ER" + ".log");
-	}
-
-	return logger; // logger << message << std::endl;
-}
-
+void logtxt(const std::shared_ptr<ITitan>& api, const std::string& message);
 
 #endif // ER_UTILITY_H_

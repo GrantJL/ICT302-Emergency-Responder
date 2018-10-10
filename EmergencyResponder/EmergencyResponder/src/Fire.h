@@ -3,7 +3,9 @@
 
 #include <memory>
 
-#include <titan/plugin2/types.h>
+#include "TitanResources.h"
+
+using namespace titan::api2;
 
 class Fire
 {
@@ -14,8 +16,11 @@ private:
 	double fuelFactor; // calculate once per tick
 
 	// Titan Pointers
-	std::shared_ptr<titan::api2::ITitan> titanApi;
-	std::shared_ptr<titan::api2::IEntity> fireEntity;
+	std::shared_ptr<ITitan> titanApi;
+	std::shared_ptr<IEntity> fireEntity;
+
+	Vec3d firePosition;
+	Quat fireRotation;
 
 	double fuel;
 	bool burning;
@@ -36,7 +41,7 @@ public:
 	*/
 	static void setBuildingModifier(double val) { buildingModifier = val; };
 
-	Fire(std::shared_ptr<titan::api2::ITitan> titanApi, const titan::api2::Vec3d& position);
+	Fire(std::shared_ptr<ITitan> titanApi, const Vec3d& position);
 	//Fire(const Fire & other); // Copy fires neighbours.
 
 	void setFuel(const double fuelValue);

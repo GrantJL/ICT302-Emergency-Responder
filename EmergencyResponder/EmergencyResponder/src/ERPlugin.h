@@ -2,22 +2,19 @@
 #ifndef ER_PLUGIN_H_
 #define ER_PLUGIN_H_
 
-//#include "titan/plugin2/plugin.h"
-#include "titan/plugin2/ITitan.h"
+#include "TitanResources.h"
 
 #include "Listener.h"
 #include "WildfireManager.h"
 
-#include <titan/plugin2/IEventManager.h>
-
-//using namespace titan::api2;
-
 const double STEP_INTERVAL = 1.0;
+
+using namespace titan::api2;
 
 class EmergencyResponder 
 {
 private:
-	std::shared_ptr<ITitan>				pluginApi;
+	std::shared_ptr<ITitan>				titanApi;
 	std::shared_ptr<IEventManager>		events;			//for events
 	std::shared_ptr<IRenderManager>		renderer;		//Debug logging 
 	std::shared_ptr<IScenarioManager>	scenario;		//Working with entities e.g. waypoints, static objects
@@ -33,14 +30,14 @@ public:
 
 	void initialize(const std::shared_ptr<ITitan>& api) 
 	{
-		pluginApi = api;
+		titanApi = api;
 
-		events = pluginApi->getEventManager();
-		renderer = pluginApi->getRenderManager();
-		scenario = pluginApi->getScenarioManager();
-		world = pluginApi->getWorldManager();
+		events = titanApi->getEventManager();
+		renderer = titanApi->getRenderManager();
+		scenario = titanApi->getScenarioManager();
+		world = titanApi->getWorldManager();
 
-		wildfire = std::make_shared<WildfireManager>(pluginApi);
+		wildfire = std::make_shared<WildfireManager>(titanApi);
 
 
 		listener = std::make_shared<Listener>();
