@@ -10,7 +10,7 @@ using namespace titan::api2;
 
 static std::map<uint64_t, double> treeDensityCache;
 
-static double getTreeDensity(const std::shared_ptr<ITitan> & api, const Vec3d& position)
+static inline double getTreeDensity(const std::shared_ptr<ITitan> & api, const Vec3d& position)
 {
 	uint64_t tileId = api->getWorldManager()->getTileId(position);
 	std::map<uint64_t, double>::iterator it = treeDensityCache.find(tileId);
@@ -39,7 +39,7 @@ static double getTreeDensity(const std::shared_ptr<ITitan> & api, const Vec3d& p
 	return totalTreeDensity;
 }
 
-static double getSurfaceCombustion(const std::shared_ptr<ITitan> & api, const Vec3d& position)
+static inline double getSurfaceCombustion(const std::shared_ptr<ITitan> & api, const Vec3d& position)
 {
 	TerrainMaterial material = api->getWorldManager()->getSurfaceMaterialBelow(position);
 	switch (material)
@@ -70,17 +70,6 @@ static double getSurfaceCombustion(const std::shared_ptr<ITitan> & api, const Ve
 }
 
 
-static std::ofstream& logtxt(const std::shared_ptr<ITitan>& api/*, const std::string& message*/)
-{
-	static std::ofstream logger;
-
-	if (!logger.is_open())
-	{
-		logger.open(api->getUserDataDirectory() + "\\" + "ER" + ".log");
-	}
-
-	return logger; // logger << message << std::endl;
-}
-
+void logtxt(const std::shared_ptr<ITitan>& api, const std::string& message);
 
 #endif // ER_UTILITY_H_

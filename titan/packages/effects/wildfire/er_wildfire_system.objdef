@@ -1,0 +1,12 @@
+{
+	"obj" : "source", 
+	"matlib" : "graphEffects", 
+	"lod_curve" : 850.0, 
+	"lod_curve1" : 300.0, 
+	"physics" : "", 
+	"script" : "", 
+	"strict" : true, 
+	"description" : "", 
+	"parameters" : "", 
+	"fdm_root_dir" : "", 
+	"tags" : ""}
