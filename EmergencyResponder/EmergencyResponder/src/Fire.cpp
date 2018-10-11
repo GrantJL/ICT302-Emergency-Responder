@@ -16,6 +16,8 @@ double Fire::vehicleModifier = 0.5;
 double Fire::buildingModifier = 0.25;
 double Fire::maxFuel = 600;
 
+std::vector<titan::api2::Vec3d> Fire::globalFires;
+
 Fire::Fire(std::shared_ptr<titan::api2::ITitan> api, const titan::api2::Vec3d& newPosition)
 	: titanApi(api)
 {
@@ -24,10 +26,12 @@ Fire::Fire(std::shared_ptr<titan::api2::ITitan> api, const titan::api2::Vec3d& n
 	titan::api2::Quat quat;
 	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), newPosition, quat);
 
-	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, newPosition, quat);
+	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, titanApi->getWorldManager()->getNearestSurfacePositionBelow(newPosition), quat);
 	fuel = maxFuel * getTreeDensity(titanApi, newPosition) * getSurfaceCombustion(titanApi, newPosition);
 	position = newPosition;
 	titanApi->getRenderManager()->debugLog("Fire fuel set to " + std::to_string(fuel));
+	burning = true;
+	removed = false;
 }
 
 void Fire::setFuel(const double fuelValue)
@@ -52,7 +56,10 @@ bool Fire::isBurning()
 
 void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 {
-	if (fuel > 0)
+	static int fireCounter = 1;
+	if (fuel <= 0)
+		burning = false;
+	if (burning)
 	{
 		double fuelPercent = (maxFuel - fuel) / maxFuel;
 		fuelFactor = sin(fuelPercent * (0.8 * M_PI) + (0.1 * M_PI));
@@ -61,11 +68,11 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 		//titanApi->getRenderManager()->debugLog("Fuel at: " + std::to_string(fuel));
 
 		damageEntitiesAtFireLocation(dt, damagedEntities);
-		if (willPropagate())
+		if (fireCounter < MAX_FIRES && willPropagate())
 		{
 			if (willPropagate(CONST_PROB[N]) && !propped[N])
 			{
-				titanApi->getRenderManager()->debugLog("Proped north");
+				//titanApi->getRenderManager()->debugLog("Proped north");
 				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
 				pos.x += 0.0000005;
 				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
@@ -74,11 +81,13 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 					Fire f(titanApi, pos);
 					children.push_back(f);
 					propped[N] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
 				}
 			}
 			if (willPropagate(CONST_PROB[E]) && !propped[E])
 			{
-				titanApi->getRenderManager()->debugLog("Proped east");
+				//titanApi->getRenderManager()->debugLog("Proped east");
 				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
 				pos.y += 0.0000005;
 				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
@@ -87,11 +96,13 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 					Fire f(titanApi, pos);
 					children.push_back(f);
 					propped[E] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
 				}
 			}
 			if (willPropagate(CONST_PROB[S]) && !propped[S])
 			{
-				titanApi->getRenderManager()->debugLog("Proped south");
+				//titanApi->getRenderManager()->debugLog("Proped south");
 				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
 				pos.x -= 0.0000005;
 				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
@@ -100,11 +111,13 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 					Fire f(titanApi, pos);
 					children.push_back(f);
 					propped[S] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
 				}
 			}
 			if (willPropagate(CONST_PROB[W]) && !propped[W])
 			{
-				titanApi->getRenderManager()->debugLog("Proped west");
+				//titanApi->getRenderManager()->debugLog("Proped west");
 				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(position);
 				pos.y -= 0.0000005;
 				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
@@ -113,15 +126,21 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 					Fire f(titanApi, pos);
 					children.push_back(f);
 					propped[W] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
 				}
 			}
+			
 		}
 	}
 	else
 	{
-		//titanApi->getScenarioManager()->removeEntity(fireEntity);
-		burning = false;
-		titanApi->getRenderManager()->debugLog("Fire burned out");
+		if (!removed)
+		{
+			titanApi->getScenarioManager()->removeEntity(fireEntity);
+			fireCounter--;
+			removed = true;
+		}
 	}
 	// Step children
 	std::vector<Fire>::iterator child;
@@ -129,6 +148,7 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 	{
 		child->step(dt, damagedEntities);
 	}
+	titanApi->getRenderManager()->debugLog("Fire Count: " + std::to_string(fireCounter));
 }
 
 void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities)
@@ -172,7 +192,7 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 
 bool Fire::willPropagate()
 {
-	return willPropagate(30);
+	return willPropagate(10);
 }
 
 bool Fire::willPropagate(const double percent)
@@ -185,7 +205,7 @@ bool Fire::willPropagate(const double percent)
 
 bool Fire::fireAtPosition(const titan::api2::Vec3d position)
 {
-	std::set<std::shared_ptr<titan::api2::IEntity>> entities = titanApi->getScenarioManager()->getEntities(position, 1);
+	/*std::set<std::shared_ptr<titan::api2::IEntity>> entities = titanApi->getScenarioManager()->getEntities(position, radius);
 	std::set<std::shared_ptr<titan::api2::IEntity>>::iterator entityIterator;
 	for (entityIterator = entities.begin(); entityIterator != entities.end(); entityIterator++)
 	{
@@ -196,5 +216,26 @@ bool Fire::fireAtPosition(const titan::api2::Vec3d position)
 			return true;
 		}
 	}
+	return false;*/
+	std::vector<titan::api2::Vec3d>::iterator it;
+	for (it = globalFires.begin(); it != globalFires.end(); it++)
+	{
+		if (compareVec3d(*it, position))
+		{
+			titanApi->getRenderManager()->debugLog("Wildfire at location");
+			return true;
+		}
+	}
 	return false;
+}
+
+bool Fire::compareVec3d(const titan::api2::Vec3d & vec1, const titan::api2::Vec3d & vec2)
+{
+	if ((int)vec1.x != (int)vec2.x)
+		return false;
+	if ((int)vec1.y != (int)vec2.y)
+		return false;
+	if ((int)vec1.z != (int)vec2.z)
+		return false;
+	return true;
 }

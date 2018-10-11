@@ -49,8 +49,7 @@ public:
 			{
 				//titanApi->getRenderManager()->debugLog("Intialized Step");
 				//titanApi->getRenderManager()->debugLog(std::to_string(initialPosition.x));
-				if(fireOrigin->isBurning())
-					fireOrigin->step(dt, damagedEntities);
+				fireOrigin->step(dt, damagedEntities);
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 #define ER_FIRE_H
 
 #include <memory>
+#include <vector>
 
 #include <titan/plugin2/types.h>
 
@@ -16,7 +17,6 @@ enum FIRE_SPREAD_DIR
 	W = 6,
 	NW = 7
 };
-
 class Fire
 {
 private:
@@ -33,6 +33,7 @@ private:
 	double fuel;
 	titan::api2::Vec3d position;
 	bool burning;
+	bool removed;
 	bool propped[8] =
 	{
 		false, false, false,
@@ -42,11 +43,13 @@ private:
 
 	const double radius = 5.0;
 	const double damage = 0.2;
+	const int MAX_FIRES = 800;
 
 	const double CONST_PROB[8] = 
 							{ 12.5, 12.5, 12.5,
 							  12.5, /*0*/ 12.5,
 							  12.5, 12.5, 12.5};
+	static std::vector<titan::api2::Vec3d> globalFires;
 
 public:
 
@@ -88,6 +91,7 @@ private:
 	bool willPropagate();
 	bool willPropagate(const double percent);
 	bool fireAtPosition(const titan::api2::Vec3d position);
+	bool compareVec3d(const titan::api2::Vec3d & vec1, const titan::api2::Vec3d & vec2);
 
 };
 
