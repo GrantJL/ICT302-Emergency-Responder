@@ -19,42 +19,58 @@ enum FIRE_SPREAD_DIR
 	W = 6,
 	NW = 7
 };
+
+struct Position {
+	int x;
+	int y;
+};
+
+
 class Fire
 {
 private:
 	static double vehicleModifier;
 	static double buildingModifier;
 	static double maxFuel;
-	double fuelFactor; // calculate once per tick
+
+	/// The relative positions for fire spread
+	static const std::vector<Position> spreadDirections;
+
+	static double fireGap; /// The gap between fires (in long/lat degrees)
+	static std::vector<Position> globalFires; /// A list of all fire positions
+
+	double fuelFactor; /// How intense the fire curently is/ based on its lifetime.(calculate once per tick)
 
 	// Titan Pointers
 	std::shared_ptr<ITitan> titanApi;
-	std::shared_ptr<IEntity> fireEntity;
-	std::vector<Fire> children;
+	std::shared_ptr<IEntity> fireEntity; /// Pointer to fire effect entitiy, THIS MAY BE NULLPTR WHEN FIRE IS EXHAUSTED.
 
-	Vec3d firePosition;
-	Quat fireRotation;
+	std::vector<Fire> children; /// A list of fires spawned from this Fire.
+
+	Position basicPosition; /// This fires position in interger euler coordinates.
+	Vec3d realPosition;		/// This fires real world position (in ECEF)
+	Quat fireRotation;		/// This fire rotation (not required?)
 
 	double fuel;
-	bool burning;
-	bool propped[8] =
+	bool burning;	/// Is the fire currently burning.
+	bool propped[8] =	/// Has the fire propagated in each direction. (N, NE, E, ...)
 	{
 		false, false, false,
 		false, false, false,
 		false, false
 	};
 
-	const double radius = 5.0;
-	const double damage = 0.2;
-	const int MAX_FIRES = 800;
+	const double radius = 5.0; // TODO: Configurize (this is the radius in which the fire deals damage)
+	const double damage = 0.2; // TODO: Configurize (Max damage a fire can to per tick.
+	const int MAX_FIRES = 800; 
 
-	const double CONST_PROB[8] = 
+	const double CONST_PROB[8] = // TODO: Remove?
 							{ 12.5, 12.5, 12.5,
 							  12.5, /*0*/ 12.5,
 							  12.5, 12.5, 12.5};
-	static std::vector<titan::api2::Vec3d> globalFires;
 
 public:
+	Fire(std::shared_ptr<ITitan> api, const Vec3d& realPosition, const Position& basicPosition);
 
 	/**
 	 * Sets the amount of damage vehicles take in comparison to regular entities.
@@ -67,7 +83,18 @@ public:
 	*/
 	static void setBuildingModifier(double val) { buildingModifier = val; };
 
-	Fire(std::shared_ptr<ITitan> titanApi, const Vec3d& position);
+	/**
+	* Calculates a real world position relative to the parentPos.
+	* Calculates a new real world coordinate relative to parent pos, 
+	* this uses the static fireGap variable as the gap between the parent
+	* and new position.
+	*
+	* @param parentPos - the position to calculate a new position from (ECEF coords).
+	* @param position - the offest to calculate a new posiiton from.
+	* @retutn calculated position relative to the parentPos (ECEF coords). 
+	*/
+	static Vec3d calculateRelativePosition(const titan::api2::Vec3d& parentPos, const Position& position);
+
 	//Fire(const Fire & other); // Copy fires neighbours.
 
 	void setFuel(const double fuelValue);
@@ -84,17 +111,30 @@ public:
 	void step(const double dt, std::map<std::string, double>& damagedEntities);
 
 private:
+	/**
+	* Returns true when the two positions match, false otherwise.
+	*/
+	static bool compatePositions(const Position& posA, const Position& posB);
 
 	/**
 	* Damages entities in range of the fire, adding damaged entites and their updated health to <code>damagedEntities</code>.
 	* @param dt the time in seconds since the last step
 	* @param damagedEntities a map of entities UUID and their health.
 	*/
-	void  damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities);
+	void damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities);
+	/**
+	* Returns true when this fire should propagate.
+	*/
 	bool willPropagate();
+	// TODO: Document this better
+	/**
+	* Returns true <code>percent</code> percent of the time.	
+	*/
 	bool willPropagate(const double percent);
-	bool fireAtPosition(const titan::api2::Vec3d position);
-	bool compareVec3d(const titan::api2::Vec3d & vec1, const titan::api2::Vec3d & vec2);
+	/**
+	* Returns true when a fire has already been spawned at given position.
+	*/
+	bool fireAtPosition(const Position position);
 
 };
 

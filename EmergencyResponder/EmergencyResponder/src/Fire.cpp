@@ -7,31 +7,44 @@
 
 #include "WildfireManager.h"
 
-double Fire::vehicleModifier = 0.5;
-double Fire::buildingModifier = 0.25;
-double Fire::maxFuel = 600;
+double Fire::vehicleModifier = 0.5;		// The damage percentage vehivles take.
+double Fire::buildingModifier = 0.25;	// The damage percentage buildings take.
+double Fire::maxFuel = 600;				// Maximum possible fuel (10 minutes, assuming burn rate of 1/s)
+double Fire::fireGap = 0.000001;		// Gap between fires in degrees(longitude)
 
-std::vector<titan::api2::Vec3d> Fire::globalFires;
-Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& position)
-	: titanApi(api), burning(true), fuel(maxFuel)
+// the 8 posible spread directions (N, NE, E, SE, ...)
+const std::vector<Position> Fire::spreadDirections = {
+	{1, 0},
+	{1, 1},
+	{0, 1},
+	{-1, 1},
+	{-1, 0},
+	{-1, -1},
+	{0, -1},
+	{1, -1}
+};
+
+std::vector<Position> Fire::globalFires; // Positions at which a fire has been created
+
+Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& realPos, const Position& basicPos)
+	: titanApi(api), burning(true), fuel(maxFuel), realPosition(realPos), basicPosition(basicPos)
 {
+	// Get the entity descriptor
 	EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire");
 
-	firePosition = position;
-
+	// Calculate rotation (probably unnecessary for the fire effect.
 	titan::api2::Quat quat;
-	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), firePosition, quat);
+	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), realPosition, quat);
 
-	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, titanApi->getWorldManager()->getNearestSurfacePositionBelow(firePosition), quat);
+	// Create fire effect at ground level.
+	realPosition = titanApi->getWorldManager()->getNearestSurfacePositionBelow(realPosition);
+	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, realPosition, quat);
+
+	// Initialize the fire attributes.
 	// fuel = maxFuel;
 	// TODO: may need to rethink this. ??Surface * 100, TreeDense * 500??
-	fuel = maxFuel * getTreeDensity(titanApi, firePosition) * getSurfaceCombustion(titanApi, firePosition);
+	fuel = maxFuel * getTreeDensity(titanApi, realPosition) * getSurfaceCombustion(titanApi, realPosition);
 	titanApi->getRenderManager()->debugLog("Fire fuel set to " + std::to_string(fuel));
-	burning = true;
-
-	util::MathHelpers::createGroundAlignedQuaternion(Vec3d(1, 0, 0), firePosition, fireRotation);
-
-	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, firePosition, fireRotation);
 }
 
 void Fire::setFuel(const double fuelValue)
@@ -69,80 +82,54 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 		// Damage entites in radius of the fire, add the damaged entites to damagedEntities 
 		damageEntitiesAtFireLocation(dt, damagedEntities);
 
-		if (fireCounter < MAX_FIRES && willPropagate())
+		// TODO: max fires not calculated correctly?
+		// Fires may not be getting removed correctly
+		if (/*fireCounter < MAX_FIRES && */willPropagate())
 		{
-			if (willPropagate(WildfireManager::getPropagationProb().at(N)) && !propped[N])
+			// For each direction of fire spread
+			for (size_t f = 0; f < 8; f++)
 			{
-				//titanApi->getRenderManager()->debugLog("Proped north");
-				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
-				pos.x += 0.0000005;
-				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
-				if (!fireAtPosition(pos))
+				// If can propagate in that direction
+				// TODO: probability can be improved, dont need to calculate a random number 9 times per fire/ per tick.
+				if ( !propped[f]  &&  willPropagate(WildfireManager::getPropagationProb().at(f)) )
 				{
-					Fire f(titanApi, pos);
-					children.push_back(f);
-					propped[N] = true;
-					fireCounter++;
-					globalFires.push_back(pos);
-				}
-			}
-			if (willPropagate(WildfireManager::getPropagationProb().at(E)) && !propped[E])
-			{
-				//titanApi->getRenderManager()->debugLog("Proped east");
-				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
-				pos.y += 0.0000005;
-				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
-				if (!fireAtPosition(pos))
-				{
-					Fire f(titanApi, pos);
-					children.push_back(f);
-					propped[E] = true;
-					fireCounter++;
-					globalFires.push_back(pos);
-				}
-			}
-			if (willPropagate(WildfireManager::getPropagationProb().at(S)) && !propped[S])
-			{
-				//titanApi->getRenderManager()->debugLog("Proped south");
-				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
-				pos.x -= 0.0000005;
-				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
-				if (!fireAtPosition(pos))
-				{
-					Fire f(titanApi, pos);
-					children.push_back(f);
-					propped[S] = true;
-					fireCounter++;
-					globalFires.push_back(pos);
-				}
-			}
-			if (willPropagate(WildfireManager::getPropagationProb().at(W)) && !propped[W])
-			{
-				//titanApi->getRenderManager()->debugLog("Proped west");
-				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
-				pos.y -= 0.0000005;
-				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
-				if (!fireAtPosition(pos))
-				{
-					Fire f(titanApi, pos);
-					children.push_back(f);
-					propped[W] = true;
-					fireCounter++;
-					globalFires.push_back(pos);
-				}
-			}
-			
+					// Basic position relative to origin fire (0, 0) e.g. (0, 1), (-2, 3)
+					Position newBasic = basicPosition;
+					// Get the new spread position
+					newBasic.x += spreadDirections[f].x;
+					newBasic.y += spreadDirections[f].y;
+					// Spawn a new fire if one isnt at that position.
+					if (!fireAtPosition(newBasic))
+					{
+						// Calculate the real position of the new fire
+						Vec3d newReal = calculateRelativePosition(realPosition, spreadDirections[f]);
+						// create the new fire
+						Fire newFire(titanApi, newReal, newBasic);
+						// Add fire to our children
+						// TODO: Improve this
+						children.push_back(newFire);
+						// Is there a better way to check if a fire can be spawned
+						propped[f] = true;
+						fireCounter++;
+						// Add the basic fire position to the list
+						globalFires.push_back(newBasic);
+					}
+				} // END if can propagate in direction
+			}// END for each spread direction
 		}
 	}
 	else if (burning)
-	{
+	{ // If fire is still burning, but has no fuel.
 		burning = false;
 
 		titanApi->getScenarioManager()->removeEntity(fireEntity);
 		fireCounter--;
+		fireEntity = nullptr;
 
-		//EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire_burnt");
-		//fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, firePosition, fireRotation);
+		// Currently have no way to represent burn ground
+		// Not create the entity for efficiency
+			//EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire_burnt");
+			//fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, realPosition, fireRotation);
 	}
 	// Step children
 	std::vector<Fire>::iterator child;
@@ -194,39 +181,48 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 
 bool Fire::willPropagate()
 {
-	return willPropagate(0.1);
+	// Each fire has a 5% chance of propagating per tick
+	return willPropagate(0.05);
 }
 
 bool Fire::willPropagate(const double percent)
 {
 	double value = rand() / ((double) RAND_MAX);
-	logtxt(titanApi, "Rand: " + std::to_string(value) + "\n");
 	if (value < percent)
 		return true;
 	return false;
 }
 
-bool Fire::fireAtPosition(const titan::api2::Vec3d position)
+bool Fire::fireAtPosition(const Position position)
 {
-	std::vector<titan::api2::Vec3d>::iterator it;
+	std::vector<Position>::iterator it;
 	for (it = globalFires.begin(); it != globalFires.end(); it++)
 	{
-		if (compareVec3d(*it, position))
+		if (compatePositions(*it, position))
 		{
-			titanApi->getRenderManager()->debugLog("Wildfire at location");
 			return true;
 		}
 	}
 	return false;
 }
 
-bool Fire::compareVec3d(const titan::api2::Vec3d & vec1, const titan::api2::Vec3d & vec2)
+bool Fire::compatePositions(const Position& posA, const Position& posB)
 {
-	if ((int)vec1.x != (int)vec2.x)
+	if (posA.x != posB.x)
 		return false;
-	if ((int)vec1.y != (int)vec2.y)
-		return false;
-	if ((int)vec1.z != (int)vec2.z)
+	if (posA.y != posB.y)
 		return false;
 	return true;
+}
+
+Vec3d Fire::calculateRelativePosition(const titan::api2::Vec3d& parentPos, const Position& position)
+{
+	Vec3d newPosition(parentPos);
+
+	newPosition = util::MathHelpers::ecefToLla(newPosition);
+
+	newPosition.x += position.x * fireGap;
+	newPosition.y += position.y * fireGap;
+
+	return util::MathHelpers::llaToEcef(newPosition);
 }
