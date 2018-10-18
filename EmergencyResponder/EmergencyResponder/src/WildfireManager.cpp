@@ -1,8 +1,10 @@
 
 #include "WildfireManager.h"
 
+std::vector<double> WildfireManager::propagationProb(8);
+
 WildfireManager::WildfireManager(std::shared_ptr<ITitan> api) 
-	: titanApi(api), isInitialized(false), propagationProb(8)
+	: titanApi(api), isInitialized(false)
 {
 
 }
@@ -78,7 +80,9 @@ void WildfireManager::updatePropagationmatrix()
 		for (int i = 0; i < propagationProb.size(); i++)
 		{
 			propagationProb[i] = ((1 - windStrength) / 8) + (propagationProb[i] * (1 - (1 - windStrength)));
+			logtxt(titanApi, "" + std::to_string(propagationProb[i]) + " ");
 		}
+		logtxt(titanApi, "\n");
 	}
 }
 

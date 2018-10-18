@@ -5,19 +5,33 @@
 #include "TitanResources.h"
 #include "Utility.h"
 
+#include "WildfireManager.h"
+
 double Fire::vehicleModifier = 0.5;
 double Fire::buildingModifier = 0.25;
 double Fire::maxFuel = 600;
 
+std::vector<titan::api2::Vec3d> Fire::globalFires;
 Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& position)
 	: titanApi(api), burning(true), fuel(maxFuel)
 {
 	EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire");
 
-	util::MathHelpers::createGroundAlignedQuaternion(Vec3d(1, 0, 0), position, fireRotation);
+	firePosition = position;
 
-	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, position, fireRotation);
-	fuel = maxFuel;
+	titan::api2::Quat quat;
+	titan::api2::util::MathHelpers::createGroundAlignedQuaternion(titan::api2::Vec3d(1, 0, 0), firePosition, quat);
+
+	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, titanApi->getWorldManager()->getNearestSurfacePositionBelow(firePosition), quat);
+	// fuel = maxFuel;
+	// TODO: may need to rethink this. ??Surface * 100, TreeDense * 500??
+	fuel = maxFuel * getTreeDensity(titanApi, firePosition) * getSurfaceCombustion(titanApi, firePosition);
+	titanApi->getRenderManager()->debugLog("Fire fuel set to " + std::to_string(fuel));
+	burning = true;
+
+	util::MathHelpers::createGroundAlignedQuaternion(Vec3d(1, 0, 0), firePosition, fireRotation);
+
+	fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, firePosition, fireRotation);
 }
 
 void Fire::setFuel(const double fuelValue)
@@ -42,26 +56,101 @@ bool Fire::isBurning()
 
 void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 {
+	static int fireCounter = 1;
 	if (fuel > 0)
 	{
 		double fuelPercent = (maxFuel - fuel) / maxFuel;
 		// Calculate strength of fire (Strongest half way through its burn).
 		fuelFactor = sin(fuelPercent * (0.8 * M_PI) + (0.1 * M_PI));
+		fuel -= dt;
+
+		//titanApi->getRenderManager()->debugLog("Fuel at: " + std::to_string(fuel));
 
 		// Damage entites in radius of the fire, add the damaged entites to damagedEntities 
 		damageEntitiesAtFireLocation(dt, damagedEntities);
 
-		fuel -= (60 * dt);
+		if (fireCounter < MAX_FIRES && willPropagate())
+		{
+			if (willPropagate(WildfireManager::getPropagationProb().at(N)) && !propped[N])
+			{
+				//titanApi->getRenderManager()->debugLog("Proped north");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
+				pos.x += 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[N] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
+				}
+			}
+			if (willPropagate(WildfireManager::getPropagationProb().at(E)) && !propped[E])
+			{
+				//titanApi->getRenderManager()->debugLog("Proped east");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
+				pos.y += 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[E] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
+				}
+			}
+			if (willPropagate(WildfireManager::getPropagationProb().at(S)) && !propped[S])
+			{
+				//titanApi->getRenderManager()->debugLog("Proped south");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
+				pos.x -= 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[S] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
+				}
+			}
+			if (willPropagate(WildfireManager::getPropagationProb().at(W)) && !propped[W])
+			{
+				//titanApi->getRenderManager()->debugLog("Proped west");
+				Vec3d pos = titan::api2::util::MathHelpers::ecefToLla(firePosition);
+				pos.y -= 0.0000005;
+				pos = titan::api2::util::MathHelpers::llaToEcef(pos);
+				if (!fireAtPosition(pos))
+				{
+					Fire f(titanApi, pos);
+					children.push_back(f);
+					propped[W] = true;
+					fireCounter++;
+					globalFires.push_back(pos);
+				}
+			}
+			
+		}
 	}
 	else if (burning)
 	{
 		burning = false;
 
 		titanApi->getScenarioManager()->removeEntity(fireEntity);
+		fireCounter--;
 
-		EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire_burnt");
-		fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, firePosition, fireRotation);
+		//EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire_burnt");
+		//fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, firePosition, fireRotation);
 	}
+	// Step children
+	std::vector<Fire>::iterator child;
+	for (child = children.begin(); child != children.end(); child++)
+	{
+		child->step(dt, damagedEntities);
+	}
+	titanApi->getRenderManager()->debugLog("Fire Count: " + std::to_string(fireCounter));
 }
 
 void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities)
@@ -101,4 +190,43 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 			damagedEntities[entity->getUuid()] = damageModel->getHealthNormalized();
 		}
 	}
+}
+
+bool Fire::willPropagate()
+{
+	return willPropagate(0.1);
+}
+
+bool Fire::willPropagate(const double percent)
+{
+	double value = rand() / ((double) RAND_MAX);
+	logtxt(titanApi, "Rand: " + std::to_string(value) + "\n");
+	if (value < percent)
+		return true;
+	return false;
+}
+
+bool Fire::fireAtPosition(const titan::api2::Vec3d position)
+{
+	std::vector<titan::api2::Vec3d>::iterator it;
+	for (it = globalFires.begin(); it != globalFires.end(); it++)
+	{
+		if (compareVec3d(*it, position))
+		{
+			titanApi->getRenderManager()->debugLog("Wildfire at location");
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Fire::compareVec3d(const titan::api2::Vec3d & vec1, const titan::api2::Vec3d & vec2)
+{
+	if ((int)vec1.x != (int)vec2.x)
+		return false;
+	if ((int)vec1.y != (int)vec2.y)
+		return false;
+	if ((int)vec1.z != (int)vec2.z)
+		return false;
+	return true;
 }

@@ -2,11 +2,23 @@
 #define ER_FIRE_H
 
 #include <memory>
+#include <vector>
 
 #include "TitanResources.h"
 
 using namespace titan::api2;
 
+enum FIRE_SPREAD_DIR
+{
+	N = 0,
+	NE = 1,
+	E = 2,
+	SE = 3,
+	S = 4,
+	SW = 5,
+	W = 6,
+	NW = 7
+};
 class Fire
 {
 private:
@@ -18,15 +30,29 @@ private:
 	// Titan Pointers
 	std::shared_ptr<ITitan> titanApi;
 	std::shared_ptr<IEntity> fireEntity;
+	std::vector<Fire> children;
 
 	Vec3d firePosition;
 	Quat fireRotation;
 
 	double fuel;
 	bool burning;
+	bool propped[8] =
+	{
+		false, false, false,
+		false, false, false,
+		false, false
+	};
 
 	const double radius = 5.0;
 	const double damage = 0.2;
+	const int MAX_FIRES = 800;
+
+	const double CONST_PROB[8] = 
+							{ 12.5, 12.5, 12.5,
+							  12.5, /*0*/ 12.5,
+							  12.5, 12.5, 12.5};
+	static std::vector<titan::api2::Vec3d> globalFires;
 
 public:
 
@@ -65,6 +91,10 @@ private:
 	* @param damagedEntities a map of entities UUID and their health.
 	*/
 	void  damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities);
+	bool willPropagate();
+	bool willPropagate(const double percent);
+	bool fireAtPosition(const titan::api2::Vec3d position);
+	bool compareVec3d(const titan::api2::Vec3d & vec1, const titan::api2::Vec3d & vec2);
 
 };
 

@@ -15,7 +15,6 @@ private:
 	std::shared_ptr<ITitan> titanApi;
 
 	/// Probability vector of fire spread directions (based on wind direction/speed)
-	std::vector<double> propagationProb;
 
 	/// Entity UUID, Entity last recorded health
 	std::map<std::string, double> damagedEntities;
@@ -34,6 +33,12 @@ public:
 	void Step(double dt);
 
 	void CreateDamageReport();
+
+	static std::vector<double> propagationProb;
+	static std::vector<double> getPropagationProb()
+	{
+		return propagationProb;
+	}
 
 private:
 	void updatePropagationmatrix();
