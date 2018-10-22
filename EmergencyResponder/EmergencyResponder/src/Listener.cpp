@@ -12,4 +12,12 @@ void Listener::onTitanEvent(const std::string& name, const Json::Value& params)
 	{
 		wildfire->CreateDamageReport();
 	}
+	else if (name == "EResp::RequestFiretrucks")
+	{
+		firetruck->SendFiretrucks();
+	}
+	else if (name == "EResp::Dispatch")
+	{
+		firetruck->BeginDispatching(params.get("uuid").asString());
+	}
 }

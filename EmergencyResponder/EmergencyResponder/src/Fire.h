@@ -61,6 +61,10 @@ private:
 	};
 
 	const double radius = 5.0; // TODO: Configurize (this is the radius in which the fire deals damage)
+	const double firetruckRadius = 20.0; // TODO: Configurize (value for the radius that firetrucks can do damage)
+	const double firetruckFuelReduction = 10.0; // TODO: Configurize (value for how much fuel the firetruck can destroy)
+	const double rainFuelDampValue = 20.0; // TODO: Configurize (Value for how strong the rain damping is)
+	const double snowFuelDampValue = 15.0; // TODO: Configurize (value for how strong the snow damping is)
 	const double damage = 0.2; // TODO: Configurize (Max damage a fire can to per tick.
 	const int MAX_FIRES = 800; 
 
@@ -122,6 +126,18 @@ private:
 	* @param damagedEntities a map of entities UUID and their health.
 	*/
 	void damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities);
+
+	/**
+	 * Reduces the fuel of the fire if it is within the radius of a firetruck. Should there be more than one firetruck,
+	 * then there will be more fuel being reduced.
+	 * @param dt The time since the last step
+	 */
+	void reduceFuelForFiretrucksAtFireLocation(double dt);
+	/**
+	 * Reduces the fuel of the fire depending on the weather. It will reduce faster with higher rain and snow densities.
+	 * @param dt The time since the last step.
+	 */
+	void reduceFuelForWeather(double dt);
 	/**
 	* Returns true when this fire should propagate.
 	*/
