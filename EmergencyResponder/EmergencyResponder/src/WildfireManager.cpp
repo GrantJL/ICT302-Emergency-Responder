@@ -57,14 +57,14 @@ void WildfireManager::updatePropagationmatrix()
 	double sum = 0.0;	// used to normalize the vector
 
 	// In 8 cardinal directions
-	for (int i = 0; i < propagationProb.size(); i++)
+	for (size_t i = 0; i < propagationProb.size(); i++)
 	{
 		// Record the angle of the wind compared to spread direction.
 		// Store the angle if the wind is in the same direction as the spread (180 degrees).
 		propagationProb[i] = std::max(0.0, cos(windHeading - (i*M_PI_4)));
 		sum += propagationProb[i]; // Add to sum for normalizing
 	}
-	for (int i = 0; i < propagationProb.size(); i++)
+	for (size_t i = 0; i < propagationProb.size(); i++)
 	{
 		// Normalize the vector
 		propagationProb[i] /= sum;
@@ -77,7 +77,7 @@ void WildfireManager::updatePropagationmatrix()
 
 		// The wind strength as a percentage of 20m/s
 		double windStrength = (windSpeed / 20.0);
-		for (int i = 0; i < propagationProb.size(); i++)
+		for (size_t i = 0; i < propagationProb.size(); i++)
 		{
 			propagationProb[i] = ((1 - windStrength) / 8) + (propagationProb[i] * (1 - (1 - windStrength)));
 			logtxt(titanApi, "" + std::to_string(propagationProb[i]) + " ");
@@ -99,7 +99,8 @@ bool WildfireManager::initializePosition()
 		controlEntity = (*fire);
 		initialPosition = controlEntity->getPosition();
 
-		fireOrigin = std::make_shared<Fire>(titanApi, initialPosition);
+		Position position{ 0, 0 };
+		fireOrigin = std::make_shared<Fire>(titanApi, initialPosition, position);
 
 		return true;
 	}
