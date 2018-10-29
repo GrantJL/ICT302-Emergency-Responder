@@ -43,7 +43,7 @@ Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& realPos, const Position& ba
 	// Initialize the fire attributes.
 	// fuel = maxFuel;
 	// TODO: may need to rethink this. ??Surface * 100, TreeDense * 500??
-	fuel = maxFuel * getTreeDensity(titanApi, realPosition) * getSurfaceCombustion(titanApi, realPosition);
+	fuel = (maxFuel * 0.65 * getTreeDensity(titanApi, realPosition)) + (maxFuel * 0.35 * getSurfaceCombustion(titanApi, realPosition));
 	titanApi->getRenderManager()->debugLog("Fire fuel set to " + std::to_string(fuel));
 }
 

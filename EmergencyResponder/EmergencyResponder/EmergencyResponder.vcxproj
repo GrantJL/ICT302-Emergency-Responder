@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="src\EmergencyResponder.cpp" />
     <ClCompile Include="src\Fire.cpp" />
+    <ClCompile Include="src\FiretruckManager.cpp" />
     <ClCompile Include="src\Listener.cpp" />
     <ClCompile Include="src\Utility.cpp" />
     <ClCompile Include="src\WildfireManager.cpp" />
@@ -154,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="src\ERPlugin.h" />
     <ClInclude Include="src\Fire.h" />
+    <ClInclude Include="src\FiretruckManager.h" />
     <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\TitanResources.h" />
     <ClInclude Include="src\Utility.h" />
