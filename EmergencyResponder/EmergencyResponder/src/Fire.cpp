@@ -77,6 +77,9 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 		fuelFactor = sin(fuelPercent * (0.8 * M_PI) + (0.1 * M_PI));
 		fuel -= dt;
 
+		reduceFuelForFiretrucksAtFireLocation(dt);
+		reduceFuelForWeather(dt);
+
 		//titanApi->getRenderManager()->debugLog("Fuel at: " + std::to_string(fuel));
 
 		// Damage entites in radius of the fire, add the damaged entites to damagedEntities 
@@ -178,6 +181,29 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 		}
 	}
 }
+
+void Fire::reduceFuelForFiretrucksAtFireLocation(double dt)
+{
+	Vec3d pos = fireEntity->getPosition();
+	std::set<std::shared_ptr<IEntity>> entities = titanApi->getScenarioManager()->getEntities(pos, firetruckRadius);
+	std::set<std::shared_ptr<titan::api2::IEntity>>::iterator entityIter;
+	for (entityIter = entities.begin(); entityIter != entities.end(); entityIter++)
+	{
+		if ((*entityIter)->getDescriptor().defaultEntityName == "Firetruck")
+		{
+			fuel -= firetruckFuelReduction * dt;
+		}
+	}
+}
+
+void Fire::reduceFuelForWeather(double dt)
+{
+	double rainVal = titanApi->getWorldManager()->getWeatherData(titan::api2::Vec3d(0, 0, 0)).rainDensity;
+	double snowVal = titanApi->getWorldManager()->getWeatherData(titan::api2::Vec3d(0, 0, 0)).snowDensity;
+	fuel -= rainFuelDampValue * rainVal * dt;
+	fuel -= snowFuelDampValue * snowVal * dt;
+}
+
 
 bool Fire::willPropagate()
 {

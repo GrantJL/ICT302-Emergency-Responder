@@ -2,10 +2,13 @@
 #ifndef ER_PLUGIN_H_
 #define ER_PLUGIN_H_
 
+#include <windows.h>
+
 #include "TitanResources.h"
 
 #include "Listener.h"
 #include "WildfireManager.h"
+#include "FiretruckManager.h"
 
 const double STEP_INTERVAL = 1.0;
 
@@ -22,6 +25,7 @@ private:
 
 	std::shared_ptr<Listener>			listener;
 	std::shared_ptr<WildfireManager>	wildfire;
+	std::shared_ptr<FiretruckManager>	firetruck;
 
 	double elapsedTime;
 
@@ -38,18 +42,41 @@ public:
 		world = titanApi->getWorldManager();
 
 		wildfire = std::make_shared<WildfireManager>(titanApi);
-
+		firetruck = std::make_shared<FiretruckManager>(titanApi);
 
 		listener = std::make_shared<Listener>();
 		listener->wildfire = wildfire;
+		listener->firetruck = firetruck;
 
 		events->addTitanEventListener("EResp::Begin", listener);
 		events->addTitanEventListener("EResp::DamageReport", listener);
+		events->addTitanEventListener("EResp::RequestFiretrucks", listener);
+		events->addTitanEventListener("EResp::Dispatch", listener);
 	}
 
 	void update(double dt) 
 	{
 		elapsedTime += dt;
+
+		if (firetruck->IsDispatching())
+		{
+			POINT point{ 0, 0 };
+			Vec3d worldPosEcef;
+			if (::GetCursorPos(&point))
+			{
+				HWND window = ::GetActiveWindow();
+				ScreenToClient(window, &point);
+
+				Point titanPoint(point.x, point.y);
+				worldPosEcef = titanApi->getRenderManager()->getWorldPosition(titanPoint);
+
+				firetruck->SetMousePosition(worldPosEcef);
+				if (GetAsyncKeyState(VK_LBUTTON) < 0)
+				{
+					firetruck->DispatchFiretruck();
+				}
+			}
+		}
 
 		if (elapsedTime >= STEP_INTERVAL)
 		{
