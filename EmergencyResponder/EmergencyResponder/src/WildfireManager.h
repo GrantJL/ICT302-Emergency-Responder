@@ -7,6 +7,8 @@
 #include "Utility.h"
 #include "Fire.h"
 
+#include "WildfireConfig.h"
+
 using namespace titan::api2;
 
 class WildfireManager
@@ -41,8 +43,14 @@ public:
 	}
 
 private:
+	/**
+	 * Updates the matrix which determines the base likelyhood a fire will proopagate in a direction.
+	 * The Propagation likely hood is based on the current wind direction.
+	 */
 	void updatePropagationmatrix();
 	bool initializePosition();
+
+
 };
 
 #endif // ER_WILDFIRE_MANAGER_H_

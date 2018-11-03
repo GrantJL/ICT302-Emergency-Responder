@@ -11,17 +11,8 @@ var EmergencyResponder =
     init:function()
     {
         // Set window size and position on screen
-		window.resizeTo(275, 460);
+		window.resizeTo(275, 135);
 		window.moveTo(0, 100);
-
-        // Request Entities button
-        $('button[name=reqEnts]').on(
-        {
-            'click':function()
-            {
-                $events.sendEventArgs("EResp::request", null);
-            }
-        });
 
         // Request Entities button
         $('button[name=initFire]').on(

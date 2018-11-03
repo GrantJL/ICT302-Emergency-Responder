@@ -73,7 +73,7 @@
     <IncludePath>$(SolutionDir)..\titan\plugins\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)..\titan\plugins\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)$(Configuration)\inters\</IntDir>
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir>..\..\titan\plugins\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(IncludePath)</IncludePath>
@@ -150,6 +150,7 @@
     <ClCompile Include="src\FiretruckManager.cpp" />
     <ClCompile Include="src\Listener.cpp" />
     <ClCompile Include="src\Utility.cpp" />
+    <ClCompile Include="src\WildfireConfig.cpp" />
     <ClCompile Include="src\WildfireManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +161,7 @@
     <ClInclude Include="src\TitanResources.h" />
     <ClInclude Include="src\Utility.h" />
     <ClInclude Include="src\WildfireManager.h" />
+    <ClInclude Include="src\WildfireConfig.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

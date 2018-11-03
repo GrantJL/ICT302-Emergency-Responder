@@ -9,6 +9,7 @@
 #include "Listener.h"
 #include "WildfireManager.h"
 #include "FiretruckManager.h"
+#include "WildfireConfig.h"
 
 const double STEP_INTERVAL = 1.0;
 
@@ -32,8 +33,11 @@ private:
 public:
 	EmergencyResponder() : elapsedTime(0) { }
 
-	void initialize(const std::shared_ptr<ITitan>& api) 
+	void initialize(const std::shared_ptr<ITitan>& api)
 	{
+		if (WildfireConfig::loadConfig(api->getUserDataDirectory() + "\\plugins\\EmergencyResponder\\Wildfire.json"))
+			logtxt(api, "Config loaded succesfully");
+
 		titanApi = api;
 
 		events = titanApi->getEventManager();
