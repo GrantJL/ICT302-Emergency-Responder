@@ -65,6 +65,11 @@ private:
 		false, false
 	};
 
+	const double firetruckRadius = 20.0; // TODO: Configurize (value for the radius that firetrucks can do damage)
+	const double firetruckFuelReduction = 10.0; // TODO: Configurize (value for how much fuel the firetruck can destroy)
+	const double rainFuelDampValue = 20.0; // TODO: Configurize (Value for how strong the rain damping is)
+	const double snowFuelDampValue = 15.0; // TODO: Configurize (value for how strong the snow damping is)
+
 public:
 	Fire(std::shared_ptr<ITitan> api, const Vec3d& realPosition, const Position& basicPosition);
 	~Fire();

@@ -11,7 +11,7 @@ var EmergencyResponder =
     init:function()
     {
         // Set window size and position on screen
-		window.resizeTo(275, 135);
+		window.resizeTo(275, 250);
 		window.moveTo(0, 100);
 
         // Request Entities button
