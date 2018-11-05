@@ -1,10 +1,10 @@
 {
-		"FireGap" : 0.000005,
+		"FireGap" : 0.000003,
 		"VehicleDamageMult" : 0.5,
 		"BuildingDamageMult" : 0.01,
 		"MaxFuel" : 600,
-		"DamageRadius" : 15.0,
-		"BaseDamage" : 0.2,
+		"DamageRadius" : 4.0,
+		"BaseDamage" : 0.5,
 		"WindSpeedLimit" : 20.0,
 		"SurfaceMaterialFuelFactor" : [
 			0.2,
