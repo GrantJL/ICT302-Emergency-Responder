@@ -63,7 +63,7 @@ void WildfireManager::CreateDamageReport()
 {
 	//logtxt(titanApi, "Damage Report");
 	std::ofstream report;
-	report.open(titanApi->getUserDataDirectory() + "\\plugins\\EmergencyResponder\\damageReport.csv");
+	report.open(titanApi->getUserDataDirectory() + "\\plugins\\EmergencyResponder\\damageReport.csv", std::ios_base::trunc);
 
 	if (report.good())
 	{
