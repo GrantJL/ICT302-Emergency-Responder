@@ -9,6 +9,7 @@ class WildfireConfig
 {
 public:
 	static std::map<std::string, double> buildingValue;
+	static std::map<std::string, double> vehicleValue;
 	static std::vector<double> surfaceFactor;
 	static const int surfaceFactorSize = 16;
 	static double fireGap;					/// Gap between fires in degrees(longitude)
