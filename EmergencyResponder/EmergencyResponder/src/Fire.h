@@ -86,6 +86,8 @@ public:
 	*/
 	static Vec3d calculateRelativePosition(const titan::api2::Vec3d& parentPos, const Position& position);
 
+	static void reset();
+
 	//Fire(const Fire & other); // Copy fires neighbours.
 
 	void setFuel(const double fuelValue);

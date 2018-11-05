@@ -9,8 +9,24 @@ WildfireManager::WildfireManager(std::shared_ptr<ITitan> api)
 
 }
 
+void WildfireManager::Reset()
+{
+	Fire::reset();
+	// Delete all active fires.
+	for (auto fireIt = Fire::activeFires.begin(); fireIt != Fire::activeFires.end(); /* Iterator set in loop, to support element removal*/)
+	{
+			fireIt = Fire::activeFires.erase(fireIt);
+	}
+	isInitialized = false;
+}
+
 void WildfireManager::Begin()
 {
+	if (isInitialized)
+	{
+		Reset();
+		fireOrigin = nullptr;
+	}
 	isInitialized = initializePosition();
 }
 
@@ -31,6 +47,7 @@ void WildfireManager::Step(double dt)
 				// Set the next iterator.
 				if ( !(*fireIt)->isBurning() && (*fireIt)->getFuel() <= 0 )
 				{
+					//(fireIt*)
 					fireIt = Fire::activeFires.erase(fireIt);
 				}
 				else
@@ -172,11 +189,12 @@ bool WildfireManager::initializePosition()
 	auto fire = fireList.begin();
 	if (fire != fireList.end())
 	{
-		controlEntity = (*fire);
-		initialPosition = controlEntity->getPosition();
+		//controlEntity = (*fire);
+		initialPosition = (*fire)->getPosition();
 
 		Position position{ 0, 0 };
 		fireOrigin = std::make_shared<Fire>(titanApi, initialPosition, position);
+		//Fire::activeFires.insert(std::make_shared<Fire>(titanApi, initialPosition, position));
 
 		return true;
 	}

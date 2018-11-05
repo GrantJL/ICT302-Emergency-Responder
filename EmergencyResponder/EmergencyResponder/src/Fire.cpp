@@ -55,12 +55,19 @@ Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& realPos, const Position& ba
 
 Fire::~Fire()
 {
-	if (fireEntity != nullptr)
+	if (fireEntity != nullptr && fireEntity->isLoaded())
 	{
+		logtxt(titanApi, "A");
 		titanApi->getScenarioManager()->removeEntity(fireEntity);
+		logtxt(titanApi, "B");
 		fireEntity = nullptr;
 	}
 	titanApi = nullptr;
+}
+
+void Fire::reset()
+{
+	globalFires.clear();
 }
 
 void Fire::setFuel(const double fuelValue)
