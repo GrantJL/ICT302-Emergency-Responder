@@ -15,6 +15,10 @@
 
 #include <titan/plugin2/util/MathHelpers.h>
 #include <titan/plugin2/types.h>
+#include <json/json.h>
+#include <titan/plugin2/IShape.h>
+#include <titan/plugin2/ICamera.h>
+#include <titan/plugin2/IWaypointPath.h>
 
 //#include <titan/plugin2/ICamera.h>
 //#include <titan/plugin2/IStaticObject.h>

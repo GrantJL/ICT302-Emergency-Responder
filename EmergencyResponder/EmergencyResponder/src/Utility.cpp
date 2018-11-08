@@ -7,7 +7,7 @@ void logtxt(const std::shared_ptr<ITitan>& api, const std::string& message)
 
 	if (!logger.is_open())
 	{
-		logger.open(api->getUserDataDirectory() + "\\" + "ER-Damage" + ".log");
+		logger.open(api->getUserDataDirectory() + "\\plugins\\EmergencyResponder\\EmergencyResponder.log");
 	}
 
 	logger << message << std::endl;

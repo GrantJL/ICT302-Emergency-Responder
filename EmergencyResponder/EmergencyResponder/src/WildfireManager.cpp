@@ -22,29 +22,106 @@ void WildfireManager::Step(double dt)
 		{
 			updatePropagationmatrix();
 			fireOrigin->step(dt, damagedEntities);
+			for (auto fireIt = Fire::activeFires.begin(); fireIt != Fire::activeFires.end(); /* Iterator set in loop, to support element removal*/)
+			{
+				// Step the fire
+				(*fireIt)->step(dt, damagedEntities);
+
+				// Remove fire if it's exhausted.
+				// Set the next iterator.
+				if ( !(*fireIt)->isBurning() && (*fireIt)->getFuel() <= 0 )
+				{
+					fireIt = Fire::activeFires.erase(fireIt);
+				}
+				else
+				{
+					fireIt++;
+				}
+			}
 		}
 	}
 }
 
 void WildfireManager::CreateDamageReport()
 {
-	logtxt(titanApi, "Damage Report");
+	//logtxt(titanApi, "Damage Report");
+	std::ofstream report;
+	report.open(titanApi->getUserDataDirectory() + "\\plugins\\EmergencyResponder\\damageReport.csv");
 
-	for (auto it = damagedEntities.begin(); it != damagedEntities.end(); it++)
+	if (report.good())
 	{
-		// Get the name of the entity, in future we will likely store the entity blueprint.
-		std::string name;
-		std::shared_ptr<IEntity> en = titanApi->getScenarioManager()->getEntity((*it).first);
-		if (en != nullptr)
-			name = en->getName();
-		else
-			name = "Unknown";
+		report << "Type, Casualties, Injuries, Monetary Damage" << std::endl;
+		int deaths = 0;
+		int injuries = 0;
+		int vehiclesDestroyed = 0;
+		int vehiclesDamaged = 0;
+		double estimatedBuildingValueLost = 0.0;
+		double estimatedVehicleValueLost = 0.0;
 
-		// Output the entity's name and health (when it was last damaged by fire).
-		logtxt(titanApi, name + " " + std::to_string(it->second));
+		for (auto it = damagedEntities.begin(); it != damagedEntities.end(); it++)
+		{
+			//// Get the name of the entity, in future we will likely store the entity blueprint.
+			//std::string name;
+
+			// It the second value is non-negative, it is an entities health value.
+			if ((*it).second >= 0.0)
+			{
+				std::shared_ptr<IEntity> entity = titanApi->getScenarioManager()->getEntity((*it).first);
+				if (entity != nullptr)
+				{
+					if (entity->isA(EntityCategory::EntityVehicle))
+					{
+						if ((*it).second > 0.0)
+							vehiclesDamaged++;
+						else
+							vehiclesDestroyed++;
+
+						if (WildfireConfig::vehicleValue.find((*it).first) != WildfireConfig::vehicleValue.end())
+						{
+							estimatedVehicleValueLost += (1.0 - (*it).second) * WildfireConfig::vehicleValue[(*it).first];
+						}
+						else
+						{
+							estimatedVehicleValueLost += (1.0 - (*it).second) * WildfireConfig::vehicleValue["default"];
+						}
+					}
+					else
+					{
+						if ((*it).second > 0.0)
+							injuries++;
+						else
+							deaths++;
+					}
+				}
+			}
+			else
+			{
+				// If the damage is a negative value, the entity is a Static Object (building).
+				// See Fire::estimateBuidlingDamage() and Fire::damageEntitiesAtFireLocation()
+				
+				if (WildfireConfig::buildingValue.find((*it).first) != WildfireConfig::buildingValue.end())
+				{
+					estimatedBuildingValueLost += std::abs((*it).second) * WildfireConfig::buildingValue[(*it).first];
+				}
+				else
+				{
+					estimatedBuildingValueLost += std::abs((*it).second) * WildfireConfig::buildingValue["default"];
+				}
+			}
+		}
+	
+		report << "People, " << deaths << ", " << injuries << ", -" << std::endl;
+		// Currently not estimating the value of vehicles
+		report << "Vehicles, " << vehiclesDestroyed << ", " << vehiclesDamaged << ", " << (long)estimatedVehicleValueLost << std::endl;
+		report << "Buildings, -, -, " /*<< std::fixed*/ << (long)estimatedBuildingValueLost /*<< std::scientific*/ << std::endl;
+	}
+	else
+	{
+		logtxt(titanApi, "Failed to create damage report!");
 	}
 
-	logtxt(titanApi, "END Damage Report");
+	
+
 }
 
 void WildfireManager::updatePropagationmatrix()
@@ -69,20 +146,29 @@ void WildfireManager::updatePropagationmatrix()
 		// Normalize the vector
 		propagationProb[i] /= sum;
 	}
-	if (windSpeed < 20.0)
+
+	//if (windSpeed < WIND_SPEED_LIMIT)
+	// Considered further limiting the propagation to a tighter direction/cone
+	//  in the wind direction after this limit was reached.
+	// Currently after the wind speed has reached this WIND_SPEED_LIMIT
+	//  the fire's propagation will not alter.
 	{
 		// Increase spread probability in the direction of the wind.
 		// When the wind is 0, spread will be equal in all directions.
-		// When the wind reaches 20m/s, spread will only occur in the wind direction.
+		// When the wind reaches WIND_SPEED_LIMIT (default 20.0m/s),
+		//   spread will only occur in the wind direction.
 
-		// The wind strength as a percentage of 20m/s
-		double windStrength = (windSpeed / 20.0);
+		// The wind strength as a percentage of WIND_SPEED_LIMIT
+		double limitedWindSpeed = std::min(windSpeed, WildfireConfig::windSpeedLimit);
+		double windStrength = (limitedWindSpeed / 20.0);
 		for (size_t i = 0; i < propagationProb.size(); i++)
 		{
 			propagationProb[i] = ((1 - windStrength) / 8) + (propagationProb[i] * (1 - (1 - windStrength)));
-			logtxt(titanApi, "" + std::to_string(propagationProb[i]) + " ");
+			
+			// Accumalate the vector
+			if (i > 0)
+				propagationProb[i] += propagationProb[i - 1];
 		}
-		logtxt(titanApi, "\n");
 	}
 }
 

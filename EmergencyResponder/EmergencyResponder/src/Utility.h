@@ -3,6 +3,8 @@
 
 #include "TitanResources.h"
 
+#include "WildfireConfig.h"
+
 #include <fstream>
 #include <string>
 
@@ -42,31 +44,33 @@ static inline double getTreeDensity(const std::shared_ptr<ITitan> & api, const V
 static inline double getSurfaceCombustion(const std::shared_ptr<ITitan> & api, const Vec3d& position)
 {
 	TerrainMaterial material = api->getWorldManager()->getSurfaceMaterialBelow(position);
-	switch (material)
-	{
-	case MaterialDirt:
-	case MaterialGrass:
-	case MaterialForestFloor:
-	case MaterialUnknown:
-		return 1.0;
-	case MaterialMoss:
-		return 0.5;
-	case MaterialRock:
-		return 0.2;
-	case MaterialMud:
-	case MaterialGravel:
-	case MaterialAsphalt:
-	case MaterialAsphaltPaintWhite:
-	case MaterialSand:
-	case MaterialConcrete:
-	case MaterialAsphaltPaintYellow:
-	case MaterialCobbles:
-	case MaterialDirtDug:
-	case MaterialSnow:
-		return 0.0;
-	default:
-		return 0.0;
-	}
+
+	return WildfireConfig::surfaceFactor.at(material);
+	//switch (material)
+	//{
+	//case MaterialDirt:
+	//case MaterialGrass:
+	//case MaterialForestFloor:
+	//case MaterialUnknown:
+	//	return 1.0;
+	//case MaterialMoss:
+	//	return 0.5;
+	//case MaterialRock:
+	//	return 0.2;
+	//case MaterialMud:
+	//case MaterialGravel:
+	//case MaterialAsphalt:
+	//case MaterialAsphaltPaintWhite:
+	//case MaterialSand:
+	//case MaterialConcrete:
+	//case MaterialAsphaltPaintYellow:
+	//case MaterialCobbles:
+	//case MaterialDirtDug:
+	//case MaterialSnow:
+	//	return 0.0;
+	//default:
+	//	return 0.0;
+	//}
 }
 
 
