@@ -33,16 +33,10 @@ public:
 	static std::set<std::shared_ptr<Fire>> activeFires;
 private:
 	// More these to the WildfireManager class along with functions outlined below.
-	static std::vector<Position> globalFires;	/// A list of all fire positionsh
-	/*static double fireGap;						/// The gap between fires (in long/lat degrees)
-	static double vehicleModifier;				/// The damage percentage vehicles take.	
-	static double buildingModifier;				/// The damage percentage buildings take.
-	static double maxFuel;						/// Maximum possible fuel (default 600, 10 minutes, assuming burn rate of 1/s)*/
+	static std::vector<Position> globalFires;	/// A list of all fire positions
 
 	/// The relative positions for fire spread
 	static const std::vector<Position> spreadDirections;
-
-
 
 	// Titan Pointers
 	std::shared_ptr<ITitan> titanApi;

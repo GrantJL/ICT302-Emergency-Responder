@@ -218,7 +218,6 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 	}
 }
 
-
 void Fire::damageEntity(double dt, std::map<std::string, double>& damagedEntities, std::shared_ptr<IEntity> entity)
 {
 	std::shared_ptr<IDamageModel> damageModel = entity->getDamageModel();
@@ -295,8 +294,19 @@ double getRandom()
 
 bool Fire::willPropagate()
 {
-	// Each fire has a 5% chance of propagating per tick
-	return willPropagate(0.05);
+	// If there is a neighbouring location availalbe to propagate to
+	if (!propped[0] || !propped[1] ||
+		!propped[2] || !propped[3] ||
+		!propped[4] || !propped[5] ||
+		!propped[6] || !propped[7])
+	{
+		// Each fire has a 5% chance of propagating per tick
+		return willPropagate(0.05);
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool Fire::willPropagate(const double percent)
@@ -306,7 +316,6 @@ bool Fire::willPropagate(const double percent)
 		return true;
 	return false;
 }
-
 
 bool Fire::fireAtPosition(const Position position)
 {
