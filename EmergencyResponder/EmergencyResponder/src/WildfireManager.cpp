@@ -72,7 +72,8 @@ void WildfireManager::CreateDamageReport()
 		int injuries = 0;
 		int vehiclesDestroyed = 0;
 		int vehiclesDamaged = 0;
-		double estimatedValueLost = 0.0;
+		double estimatedBuildingValueLost = 0.0;
+		double estimatedVehicleValueLost = 0.0;
 
 		for (auto it = damagedEntities.begin(); it != damagedEntities.end(); it++)
 		{
@@ -91,6 +92,15 @@ void WildfireManager::CreateDamageReport()
 							vehiclesDamaged++;
 						else
 							vehiclesDestroyed++;
+
+						if (WildfireConfig::vehicleValue.find((*it).first) != WildfireConfig::vehicleValue.end())
+						{
+							estimatedVehicleValueLost += (1.0 - (*it).second) * WildfireConfig::vehicleValue[(*it).first];
+						}
+						else
+						{
+							estimatedVehicleValueLost += (1.0 - (*it).second) * WildfireConfig::vehicleValue["default"];
+						}
 					}
 					else
 					{
@@ -108,19 +118,19 @@ void WildfireManager::CreateDamageReport()
 				
 				if (WildfireConfig::buildingValue.find((*it).first) != WildfireConfig::buildingValue.end())
 				{
-					estimatedValueLost += std::abs((*it).second) * WildfireConfig::buildingValue[(*it).first];
+					estimatedBuildingValueLost += std::abs((*it).second) * WildfireConfig::buildingValue[(*it).first];
 				}
 				else
 				{
-					estimatedValueLost += std::abs((*it).second) * WildfireConfig::buildingValue["default"];
+					estimatedBuildingValueLost += std::abs((*it).second) * WildfireConfig::buildingValue["default"];
 				}
 			}
 		}
 	
-		report << "People, " << deaths << ", " << injuries << ", 0" << std::endl;
+		report << "People, " << deaths << ", " << injuries << ", -" << std::endl;
 		// Currently not estimating the value of vehicles
-		report << "Vehicles, " << vehiclesDestroyed << ", " << vehiclesDamaged << ", 0" << std::endl;
-		report << "Buildings, 0, 0, " /*<< std::fixed*/ << (long)estimatedValueLost /*<< std::scientific*/ << std::endl;
+		report << "Vehicles, " << vehiclesDestroyed << ", " << vehiclesDamaged << ", " << (long)estimatedVehicleValueLost << std::endl;
+		report << "Buildings, -, -, " /*<< std::fixed*/ << (long)estimatedBuildingValueLost /*<< std::scientific*/ << std::endl;
 	}
 	else
 	{

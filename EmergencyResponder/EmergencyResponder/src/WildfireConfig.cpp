@@ -7,6 +7,7 @@
 // Initialize data structures
 std::vector<double> WildfireConfig::surfaceFactor(surfaceFactorSize, 1.0);
 std::map<std::string, double> WildfireConfig::buildingValue;
+std::map<std::string, double> WildfireConfig::vehicleValue;
 
 // Initialize defaults
 double WildfireConfig::fireGap = 0.000002;
@@ -74,6 +75,18 @@ bool WildfireConfig::loadConfig(const std::string& file)
 			{
 				if (configVals[(*it)].isNumeric())
 					buildingValue[(*it)] = configVals[(*it)].asDouble();
+			}
+		}
+		
+		if (root.isMember("VehicleMonetaryValue") && root["VehicleMonetaryValue"].isObject())
+		{
+			Json::Value configVals = root["VehicleMonetaryValue"];
+			std::vector<std::string> names = configVals.getMemberNames();
+
+			for (auto it = names.begin(); it != names.end(); it++)
+			{
+				if (configVals[(*it)].isNumeric())
+					vehicleValue[(*it)] = configVals[(*it)].asDouble();
 			}
 		}
 
