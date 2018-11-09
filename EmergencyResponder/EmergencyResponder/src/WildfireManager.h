@@ -32,6 +32,7 @@ public:
 
 	WildfireManager(std::shared_ptr<ITitan> api);
 
+	void Reset();
 	void Begin();
 	void Step(double dt);
 

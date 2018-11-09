@@ -55,12 +55,19 @@ Fire::Fire(std::shared_ptr<ITitan> api, const Vec3d& realPos, const Position& ba
 
 Fire::~Fire()
 {
-	if (fireEntity != nullptr)
+	if (fireEntity != nullptr && fireEntity->isLoaded())
 	{
+		logtxt(titanApi, "A");
 		titanApi->getScenarioManager()->removeEntity(fireEntity);
+		logtxt(titanApi, "B");
 		fireEntity = nullptr;
 	}
 	titanApi = nullptr;
+}
+
+void Fire::reset()
+{
+	globalFires.clear();
 }
 
 void Fire::setFuel(const double fuelValue)
@@ -106,17 +113,13 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 		reduceFuelForFiretrucksAtFireLocation(dt);
 		reduceFuelForWeather(dt);
 
-		//titanApi->getRenderManager()->debugLog("Fuel at: " + std::to_string(fuel));
-
 		// Damage entites in radius of the fire, add the damaged entites to damagedEntities 
 		damageEntitiesAtFireLocation(dt, damagedEntities);
 
-		// TODO: max fires not calculated correctly?
+		
 		// Fires may not be getting removed correctly
-		if (/*fireCounter < MAX_FIRES && */willPropagate())
+		if (willPropagate())
 		{
-
-
 			double directionProbability = getRandom();
 			// For each direction of fire spread
 			for (size_t f = 0; f < 8; f++)
@@ -149,8 +152,6 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 					} // END if can propagate in direction
 					break; // We only propagate once per tick
 				}
-				// If can propagate in that direction
-				// TODO: probability can be improved, dont need to calculate a random number 9 times per fire/ per tick.
 			}// END for each spread direction
 		}
 	}
@@ -162,19 +163,11 @@ void Fire::step(const double dt, std::map<std::string, double>& damagedEntities)
 		fireCounter--;
 		fireEntity = nullptr;
 
-		// Currently have no way to represent burn ground
+		// Currently have no way to represent burnt ground
 		// Not create the entity for efficiency
 			//EntityDescriptor descriptor = titanApi->getWorldManager()->getEntityDescriptor("er_large_wildfire_burnt");
 			//fireEntity = titanApi->getScenarioManager()->createEntity(descriptor, realPosition, fireRotation);
 	}
-	// TODO: Remove
-	// Step children
-	//std::vector<Fire>::iterator child;
-	//for (child = children.begin(); child != children.end(); child++)
-	//{
-	//	child->step(dt, damagedEntities);
-	//}
-	//titanApi->getRenderManager()->debugLog("Fire Count: " + std::to_string(fireCounter));
 }
 
 void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>& damagedEntities)
@@ -200,7 +193,6 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 		// with a negative health value are static objects, specifically buildings
 		// monetary value.
 
-
 		std::set<std::shared_ptr<IStaticObject>> entities = titanApi->getScenarioManager()->getStaticObjects(pos, WildfireConfig::baseDamageRadius);
 		std::set<std::shared_ptr<IStaticObject>>::iterator entityIterator;
 
@@ -210,7 +202,6 @@ void Fire::damageEntitiesAtFireLocation(double dt, std::map<std::string, double>
 		}
 	}
 }
-
 
 void Fire::damageEntity(double dt, std::map<std::string, double>& damagedEntities, std::shared_ptr<IEntity> entity)
 {
@@ -288,8 +279,19 @@ double getRandom()
 
 bool Fire::willPropagate()
 {
-	// Each fire has a 5% chance of propagating per tick
-	return willPropagate(0.05);
+	// If there is a neighbouring location availalbe to propagate to
+	if (!propped[0] || !propped[1] ||
+		!propped[2] || !propped[3] ||
+		!propped[4] || !propped[5] ||
+		!propped[6] || !propped[7])
+	{
+		// Each fire has a (5%) chance of propagating per tick
+		return willPropagate(WildfireConfig::propagationRate);
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool Fire::willPropagate(const double percent)
@@ -299,7 +301,6 @@ bool Fire::willPropagate(const double percent)
 		return true;
 	return false;
 }
-
 
 bool Fire::fireAtPosition(const Position position)
 {

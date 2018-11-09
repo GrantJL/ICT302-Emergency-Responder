@@ -33,16 +33,10 @@ public:
 	static std::set<std::shared_ptr<Fire>> activeFires;
 private:
 	// More these to the WildfireManager class along with functions outlined below.
-	static std::vector<Position> globalFires;	/// A list of all fire positionsh
-	/*static double fireGap;						/// The gap between fires (in long/lat degrees)
-	static double vehicleModifier;				/// The damage percentage vehicles take.	
-	static double buildingModifier;				/// The damage percentage buildings take.
-	static double maxFuel;						/// Maximum possible fuel (default 600, 10 minutes, assuming burn rate of 1/s)*/
+	static std::vector<Position> globalFires;	/// A list of all fire positions
 
 	/// The relative positions for fire spread
 	static const std::vector<Position> spreadDirections;
-
-
 
 	// Titan Pointers
 	std::shared_ptr<ITitan> titanApi;
@@ -66,7 +60,7 @@ private:
 	};
 
 	const double firetruckRadius = 20.0; // TODO: Configurize (value for the radius that firetrucks can do damage)
-	const double firetruckFuelReduction = 10.0; // TODO: Configurize (value for how much fuel the firetruck can destroy)
+	const double firetruckFuelReduction = 35.0; // TODO: Configurize (value for how much fuel the firetruck can destroy)
 	const double rainFuelDampValue = 20.0; // TODO: Configurize (Value for how strong the rain damping is)
 	const double snowFuelDampValue = 15.0; // TODO: Configurize (value for how strong the snow damping is)
 
@@ -85,6 +79,8 @@ public:
 	* @retutn calculated position relative to the parentPos (ECEF coords). 
 	*/
 	static Vec3d calculateRelativePosition(const titan::api2::Vec3d& parentPos, const Position& position);
+
+	static void reset();
 
 	//Fire(const Fire & other); // Copy fires neighbours.
 
