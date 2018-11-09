@@ -33,13 +33,11 @@ public:
 	bool IsDispatching();
 
 private:
-	std::shared_ptr<titan::api2::ITitan> titanApi;
-	std::shared_ptr<titan::api2::IShape> selectorShape;
-	titan::api2::Vec3d mousePosition;
-	bool dispatching;
-	std::string uuid;
-
-	std::map<std::string, std::shared_ptr<titan::api2::IWaypointPath>> m_paths;
+	std::shared_ptr<titan::api2::ITitan> titanApi; /// A reference to the Titan API.
+	titan::api2::Vec3d mousePosition; /// The current position of the mouse.
+	bool dispatching; /// True if a firetruck is currently being dispatched. False if not.
+	std::string uuid; /// The UUID of the firetruck that is currently being dispatched.
+	std::map<std::string, std::shared_ptr<titan::api2::IWaypointPath>> m_paths; /// A map of waypoint paths, each firetruck will have their own path.
 };
 
 #endif // ER_FIRETRUCK_MANAGER_H

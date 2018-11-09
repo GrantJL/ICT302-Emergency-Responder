@@ -3,8 +3,6 @@
 FiretruckManager::FiretruckManager(std::shared_ptr<titan::api2::ITitan> api)
 {
 	titanApi = api;
-	selectorShape = titanApi->getRenderManager()->createShape(titan::api2::ShapeEllipse, titan::api2::Vec3d(0, 0, 0), titan::api2::Quat(0, 0, 0, 0));
-	selectorShape->setScale(titan::api2::Vec3d(1, 1, 1));
 	dispatching = false;
 }
 
