@@ -17,6 +17,7 @@ int WildfireConfig::maxFuel = 600;
 double WildfireConfig::baseDamageRadius = 5.0;
 double WildfireConfig::baseDamage = 0.2;
 double WildfireConfig::windSpeedLimit = 20.0;
+double WildfireConfig::propagationRate = 0.05;
 
 
 bool WildfireConfig::loadConfig(const std::string& file)
@@ -51,6 +52,9 @@ bool WildfireConfig::loadConfig(const std::string& file)
 
 		if (root.isMember("WindSpeedLimit") && root["WindSpeedLimit"].isNumeric())
 			windSpeedLimit = root["WindSpeedLimit"].asDouble();
+
+		if (root.isMember("PropagationRate") && root["PropagationRate"].isNumeric())
+			propagationRate = root["PropagationRate"].asDouble();
 
 		if (root.isMember("SurfaceMaterialFuelFactor") && root["SurfaceMaterialFuelFactor"].isArray())
 		{
