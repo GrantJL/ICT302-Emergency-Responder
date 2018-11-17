@@ -32,25 +32,16 @@
 				</header>
 
 				<!-- WINDOW CONTENT -->
-				<div class="tabSet">
-					<li>
-						<a id="Main" class="tabSelection tabSelection-selected" href="#tabMain">Main</a>
-						<a id="Entities" class="tabSelection" href="#tabEntities">Entities</a>
-						<a id="Dev" class="tabSelection" href="#tabDev">Testing</a>
-					</li>
-					<div id="tabMain" class="tabContent">
-						<label>Radius:</label><br>
-						<input name="Radius" type="number" value="5" min="1" max="20">
-						<br>
-						<button name="spawnFire">Spawn Fire</button><br>
-					</div>
-					<div id="tabEntities" class="tabContent">
-						<button name="reqEnts">Request Entities</button><br>
-						<label>Entity List:</label><br>
-						<div id="entityList"></div>
-					</div>
-					<div id ="tabDev" class="tabContent">
-						<br><div id="test"></div>
+				<div>
+					<button name="initFire">Start Wildfire</button>
+					<button name="dmgReport">Report Damage</button>
+					<br>
+					<br>
+					<label for="firetrucksList">Available Firetrucks:</label>
+					<select id="firetrucksList">
+						<option value='--'>--</option>
+					</select><br/>
+					<button id="dispatchFiretruck" disabled>Dispatch</button>
 					</div>
 				</div>
 			</div><!-- end constructor-container -->

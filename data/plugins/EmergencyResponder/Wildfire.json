@@ -1,0 +1,38 @@
+{
+		"FireGap" : 0.000003,
+		"VehicleDamageMult" : 0.5,
+		"BuildingDamageMult" : 0.01,
+		"MaxFuel" : 600,
+		"DamageRadius" : 4.0,
+		"BaseDamage" : 0.5,
+		"WindSpeedLimit" : 20.0,
+		"PropagationRate" : 0.05,
+		"SurfaceMaterialFuelFactor" : [
+			0.2,
+			1.0,
+			0.5,
+			0.2,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			1.0
+		],
+		"BuildingMonetaryValue" : 
+		{
+			"default" : 350000,
+			"western house 090x13x8x10x2" : 780000,
+			"western house 080x25x17x14x4" : 1250000
+		},
+		"VehicleMonetaryValue" : 
+		{
+			"default" : 35000
+		}
+}
