@@ -307,7 +307,7 @@ bool Fire::fireAtPosition(const Position position)
 	std::vector<Position>::iterator it;
 	for (it = globalFires.begin(); it != globalFires.end(); it++)
 	{
-		if (compatePositions(*it, position))
+		if (comparePositions(*it, position))
 		{
 			return true;
 		}
@@ -315,7 +315,7 @@ bool Fire::fireAtPosition(const Position position)
 	return false;
 }
 
-bool Fire::compatePositions(const Position& posA, const Position& posB)
+bool Fire::comparePositions(const Position& posA, const Position& posB)
 {
 	if (posA.x != posB.x)
 		return false;

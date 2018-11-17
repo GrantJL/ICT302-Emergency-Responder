@@ -101,7 +101,7 @@ private:
 	/**
 	* Returns true when the two positions match, false otherwise.
 	*/
-	static bool compatePositions(const Position& posA, const Position& posB);
+	static bool comparePositions(const Position& posA, const Position& posB);
 
 	// Damage could also be managed by the WildfireManager class, this would allow for the manager class
 	//  to alter the damage dealt based of the density of the fire.
